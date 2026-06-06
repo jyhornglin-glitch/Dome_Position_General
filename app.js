@@ -1275,7 +1275,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Setup Download & Modal Event Listeners
   function setupDownloadListeners() {
-    const downloadCurrentBtn = document.getElementById('downloadCurrentBtn');
     const viewAllMapsBtn = document.getElementById('viewAllMapsBtn');
     const allMapsModal = document.getElementById('allMapsModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
@@ -1283,25 +1282,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalBody = document.getElementById('modalBody');
     const modalTitle = document.getElementById('modalTitle');
 
-    // 1. Download Current map view
-    downloadCurrentBtn.addEventListener('click', () => {
-      if (!currentPerformer) return;
-      const fields = getPerformerFields(currentPerformer);
-      const f = formations[activeFormationIdx];
-      const filename = `${fields.name}_${fields.coordinate}_${activeFormationIdx + 1}_${f.label}.png`;
-      
-      downloadCurrentBtn.disabled = true;
-      const originalText = downloadCurrentBtn.innerHTML;
-      downloadCurrentBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 下載中...`;
-      
-      downloadSvgAsPng(document.getElementById('localGridSvg'), filename)
-        .finally(() => {
-          downloadCurrentBtn.disabled = false;
-          downloadCurrentBtn.innerHTML = originalText;
-        });
-    });
-
-    // 2. Open Modal & render previews
+    // 1. Open Modal & render previews
     viewAllMapsBtn.addEventListener('click', () => {
       if (!currentPerformer) return;
       const fields = getPerformerFields(currentPerformer);
