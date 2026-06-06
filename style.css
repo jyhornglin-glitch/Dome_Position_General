@@ -621,30 +621,30 @@ svg {
 
 .stage-watermark .watermark-line {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.035);
+  stroke: rgba(255, 255, 255, 0.35); /* Bright white */
   stroke-width: 0.75;
 }
 
 .stage-watermark .watermark-line-accent {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.07);
-  stroke-width: 1.0;
+  stroke: rgba(255, 255, 255, 0.65); /* Highlighted white */
+  stroke-width: 1.25;
 }
 
 .stage-watermark .watermark-line-yellow {
   fill: none;
-  stroke: rgba(251, 191, 36, 0.05); /* Faint gold/yellow */
+  stroke: rgba(56, 189, 248, 0.5); /* Vibrant sky blue (blue-white theme) */
   stroke-width: 0.75;
 }
 
 .stage-watermark .watermark-rect {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.05);
-  stroke-width: 1.0;
+  stroke: rgba(255, 255, 255, 0.45); /* Clear white rect */
+  stroke-width: 1.25;
 }
 
 .stage-watermark .watermark-text {
-  fill: rgba(255, 255, 255, 0.15);
+  fill: rgba(56, 189, 248, 0.75); /* Clear sky blue text */
   font-size: 8px;
   font-weight: bold;
   text-anchor: middle;
