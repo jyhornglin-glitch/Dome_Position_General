@@ -473,14 +473,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return { dx_rel, dy_rel };
     });
     
-    const displayedIndices = [0];
-    if (fIdx > 0) {
-      displayedIndices.push(fIdx - 1);
-      displayedIndices.push(fIdx);
-    }
-    
-    displayedIndices.forEach(idx => {
-      const pt = tempPoints[idx];
+    // Calculate scale based on all 6 points so that all performer positions are always inside the grid boundaries
+    tempPoints.forEach(pt => {
       maxOffset = Math.max(maxOffset, Math.abs(pt.dx_rel), Math.abs(pt.dy_rel));
     });
     
