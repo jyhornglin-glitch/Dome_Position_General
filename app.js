@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const perfID = document.getElementById('perfID');
   
   // SVG relative Map Elements
+  const stageWatermark = document.getElementById('stageWatermark');
   const localGridLines = document.getElementById('localGridLines');
   const localPath = document.getElementById('localPath');
   const localPathPoints = document.getElementById('localPathPoints');
@@ -491,8 +492,71 @@ document.addEventListener('DOMContentLoaded', () => {
       labelStep = 8;
     }
     
+    stageWatermark.innerHTML = '';
     localGridLines.innerHTML = '';
     localPathPoints.innerHTML = '';
+    
+    // Draw Stage B blueprint watermark background
+    if (!homeCoord.isText) {
+      const stageB_dx_rel = 0 - homeCoord.x;
+      const stageB_dy_rel = 37 - homeCoord.y;
+      const stageB_svg = gridToSvg(stageB_dx_rel, stageB_dy_rel);
+      
+      // Radii of concentric circles for Stage B steps
+      const stageB_radii = [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5];
+      
+      stageB_radii.forEach(r => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', stageB_svg.x);
+        circle.setAttribute('cy', stageB_svg.y);
+        circle.setAttribute('r', r * GRID_SPACING);
+        if (r === 3.5 || r === 7.5) {
+          circle.setAttribute('class', 'watermark-line-accent');
+        } else {
+          circle.setAttribute('class', 'watermark-line');
+        }
+        stageWatermark.appendChild(circle);
+      });
+      
+      // Radial stairs/steps dividing the stage
+      const angles = [-45, -30, -15, 0, 15, 30, 45];
+      angles.forEach(angle => {
+        const rad = (angle * Math.PI) / 180;
+        const r_start = 3.5 * GRID_SPACING;
+        const r_end = 7.5 * GRID_SPACING;
+        
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', stageB_svg.x + r_start * Math.cos(rad));
+        line.setAttribute('y1', stageB_svg.y + r_start * Math.sin(rad));
+        line.setAttribute('x2', stageB_svg.x + r_end * Math.cos(rad));
+        line.setAttribute('y2', stageB_svg.y + r_end * Math.sin(rad));
+        line.setAttribute('class', 'watermark-line');
+        stageWatermark.appendChild(line);
+      });
+      
+      // Runway boundaries (vertical lines at absolute Col = 1.5 and Col = 2.5)
+      const runwayCols = [1.5, 2.5];
+      runwayCols.forEach(col => {
+        const r_dx_rel = col - homeCoord.x;
+        const r_svgX = GRID_CENTER_X + r_dx_rel * GRID_SPACING;
+        
+        const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        vLine.setAttribute('x1', r_svgX);
+        vLine.setAttribute('y1', GRID_CENTER_Y - MAX_GRID_COORD * GRID_SPACING);
+        vLine.setAttribute('x2', r_svgX);
+        vLine.setAttribute('y2', GRID_CENTER_Y + MAX_GRID_COORD * GRID_SPACING);
+        vLine.setAttribute('class', 'watermark-line-accent');
+        stageWatermark.appendChild(vLine);
+      });
+      
+      // Faint label "乙舞台"
+      const stageBText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      stageBText.setAttribute('x', stageB_svg.x);
+      stageBText.setAttribute('y', stageB_svg.y + 3);
+      stageBText.setAttribute('class', 'watermark-text');
+      stageBText.textContent = '乙舞台';
+      stageWatermark.appendChild(stageBText);
+    }
     
     // Draw background grid lines (centered at 180, 180) - horizontal and vertical
     for (let i = -MAX_GRID_COORD; i <= MAX_GRID_COORD; i++) {
