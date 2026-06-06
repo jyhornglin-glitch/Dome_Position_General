@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>大巨蛋演繹個人定位系統</title>
+  <!-- Google Fonts: Outfit & Noto Sans TC for premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome for professional icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow behind the phone -->
+  <div class="glow-bg">
+    <div class="glow-circle blue"></div>
+    <div class="glow-circle teal"></div>
+    <div class="glow-circle gold"></div>
+  </div>
+
+  <!-- Phone Mockup Frame Wrapper -->
+  <div class="phone-wrapper">
+    <div class="phone-mockup">
+      <!-- Phone Bezel Details (Notch & Status bar) -->
+      <div class="phone-notch"></div>
+      <div class="phone-header">
+        <span class="phone-time" id="phoneTime">15:20</span>
+        <div class="phone-status-icons">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <i class="fa-solid fa-battery-three-quarters"></i>
+        </div>
+      </div>
+
+      <!-- Actual Application Screen -->
+      <div class="phone-screen">
+        <div class="app-container">
+          <!-- Header -->
+          <header class="app-header">
+            <div class="header-logo">
+              <i class="fa-solid fa-crosshairs logo-icon"></i>
+              <div class="logo-text">
+                <h1>個人跑位定位系統</h1>
+                <p>Personal Stage Position Navigator</p>
+              </div>
+            </div>
+          </header>
+
+          <!-- Search & Filter Card -->
+          <section class="search-section card">
+            <div class="search-inputs">
+              <div class="input-group search-box">
+                <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                <input type="text" id="searchInput" placeholder="請輸入身分證位置 (如: 4-46)" autocomplete="off">
+                <button id="clearSearchBtn" class="clear-btn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
+                <!-- Autocomplete Dropdown -->
+                <div id="autocompleteList" class="autocomplete-dropdown" style="display: none;"></div>
+              </div>
+
+              <div class="filter-group">
+                <select id="categoryFilter">
+                  <option value="all">所有組別 (A白/A藍/B白/B藍)</option>
+                  <option value="A白">A白 (Stage A White)</option>
+                  <option value="A藍">A藍 (Stage A Blue)</option>
+                  <option value="B白">B白 (Stage B White)</option>
+                  <option value="B藍">B藍 (Stage B Blue)</option>
+                </select>
+              </div>
+            </div>
+            
+          </section>
+
+          <!-- Main Interactive View (Shown after search) -->
+          <main class="main-content" id="mainContent" style="display: none;">
+            <!-- Performer Header Details -->
+            <div class="performer-summary-card card glow-border">
+              <div class="performer-avatar" id="perfAvatar">A</div>
+              <div class="performer-details">
+                <h2 id="perfName">---</h2>
+                <div class="meta-badges">
+                  <span class="meta-badge" id="perfCategory">---</span>
+                  <span class="meta-badge" id="perfID">---</span>
+                </div>
+              </div>
+              <div class="perf-status">
+                <span class="status-indicator"></span>
+              </div>
+            </div>
+
+            <!-- Mobile Navigation Tab Bar (3 tabs now) -->
+            <div class="mobile-tabs-bar" id="mobileTabsBar">
+              <button class="mobile-tab-btn active" data-tab="localGrid"><i class="fa-solid fa-compress"></i> 網格定位</button>
+              <button class="mobile-tab-btn" data-tab="walkthrough"><i class="fa-solid fa-route"></i> 跑位引導</button>
+              <button class="mobile-tab-btn" data-tab="cards"><i class="fa-solid fa-list-ol"></i> 隊形詳情</button>
+            </div>
+
+            <!-- Panel 1: Local Grid Map (Always centered at performer's basic ID coord) -->
+            <section class="visual-column mobile-tab-panel active" id="panel-localGrid">
+              <div class="map-card card">
+                <div class="card-title-bar">
+                  <h3><i class="fa-solid fa-compress"></i> 個人相對網格 (身分證為中心)</h3>
+                </div>
+                
+                <!-- Step-by-Step Formation Toggle Controls -->
+                <div class="map-control-bar">
+                  <button id="prevBtn" class="control-btn"><i class="fa-solid fa-chevron-left"></i> 上一個</button>
+                  <div class="active-formation-display">
+                    <span class="active-formation-num" id="activeFormNum">01</span>
+                    <span class="active-formation-title" id="activeFormTitle">身分證 (基本隊形)</span>
+                  </div>
+                  <button id="nextBtn" class="control-btn">下一個 <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+                <div class="map-display-area">
+                  <div class="stage-legend">
+                    <span><span class="dot-legend center-home"></span>身分證(起點)</span>
+                    <span><span class="dot-legend prev-pos"></span>上一個點</span>
+                    <span><span class="dot-legend current-pos"></span>目前點</span>
+                  </div>
+                  <div id="mapCoordDisplayBar" class="map-coord-display-bar"></div>
+                  <div class="svg-wrapper">
+                    <!-- 360x360 relative coordinate system view -->
+                    <svg id="localGridSvg" viewBox="0 0 360 360">
+                      <defs>
+                        <!-- Markers for relative path arrows -->
+                        <marker id="local-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                          <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#fbbf24" />
+                        </marker>
+                        <!-- High contrast gradient for path line -->
+                        <linearGradient id="local-path-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#38bdf8" /> <!-- Blue (previous point color) -->
+                          <stop offset="100%" stop-color="#fbbf24" /> <!-- Gold (current point color) -->
+                        </linearGradient>
+                      </defs>
+                      <!-- Dynamic coordinate grid -->
+                      <g id="localGridLines" class="grid-lines"></g>
+                      <!-- Dynamic relative path line -->
+                      <g id="localPathGroup">
+                        <path id="localPath" d="" class="local-path-line" marker-end="url(#local-arrow)" />
+                        <g id="localPathPoints"></g>
+                      </g>
+                    </svg>
+                  </div>
+                  <div id="mapMovementGuide" class="map-movement-guide"></div>
+                  <div class="stage-instruction">
+                    <i class="fa-solid fa-circle-info"></i> 以乙舞台為原點 (0,0)，表演位置在第二象限。網格標註為絕對舞台座標。
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Panel 2: Walkthrough -->
+            <section class="visual-column mobile-tab-panel" id="panel-walkthrough">
+              <div class="navigation-walkthrough card glow-border-gold">
+                <h3><i class="fa-solid fa-route"></i> 跑位引導步驟</h3>
+                <div class="nav-steps-flow" id="navStepsFlow"></div>
+              </div>
+            </section>
+
+            <!-- Panel 3: Cards Details -->
+            <section class="detail-column mobile-tab-panel" id="panel-cards">
+              <div class="section-title-bar">
+                <h3><i class="fa-solid fa-layer-group"></i> 6 大隊形點位詳情</h3>
+              </div>
+
+              <div class="formation-cards-grid">
+                <!-- Card 1: Basic -->
+                <div class="formation-card card" id="card-basic">
+                  <div class="card-glow"></div>
+                  <div class="card-header">
+                    <div class="formation-num">01</div>
+                    <div class="formation-title">
+                      <h4>身分證 (基本隊形)</h4>
+                      <p>Basic Position</p>
+                    </div>
+                    <div class="coord-badge" id="coord-basic">---</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="landmark-container">
+                      <div class="landmark-title">專屬地標圖樣</div>
+                      <div class="landmark-icon-wrapper" id="icon-basic"></div>
+                    </div>
+                    <div class="vector-details">
+                      <div class="vector-item home">
+                        <span class="label">位置：</span>
+                        <span class="val">基準點 (Home)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 2: Circle -->
+                <div class="formation-card card" id="card-circle">
+                  <div class="card-glow"></div>
+                  <div class="card-header">
+                    <div class="formation-num">02</div>
+                    <div class="formation-title">
+                      <h4>圓型</h4>
+                      <p>Circle Formation</p>
+                    </div>
+                    <div class="coord-badge" id="coord-circle">---</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="landmark-container">
+                      <div class="landmark-title">專屬地標圖樣</div>
+                      <div class="landmark-icon-wrapper" id="icon-circle"></div>
+                    </div>
+                    <div class="vector-details">
+                      <div class="vector-item home">
+                        <span class="label">相對身分證：</span>
+                        <span class="val" id="vector-circle-home">---</span>
+                      </div>
+                      <div class="vector-item prev">
+                        <span class="label">從身分證：</span>
+                        <span class="val" id="vector-circle-prev">---</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 3: Xing Yuan -->
+                <div class="formation-card card" id="card-xingYuan">
+                  <div class="card-glow"></div>
+                  <div class="card-header">
+                    <div class="formation-num">03</div>
+                    <div class="formation-title">
+                      <h4>行願</h4>
+                      <p>Xing Yuan Formation</p>
+                    </div>
+                    <div class="coord-badge" id="coord-xingYuan">---</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="landmark-container">
+                      <div class="landmark-title">專屬地標圖樣</div>
+                      <div class="landmark-icon-wrapper" id="icon-xingYuan"></div>
+                    </div>
+                    <div class="vector-details">
+                      <div class="vector-item home">
+                        <span class="label">相對身分證：</span>
+                        <span class="val" id="vector-xingYuan-home">---</span>
+                      </div>
+                      <div class="vector-item prev">
+                        <span class="label">從圓型：</span>
+                        <span class="val" id="vector-xingYuan-prev">---</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 4: Jing Si -->
+                <div class="formation-card card" id="card-jingSi">
+                  <div class="card-glow"></div>
+                  <div class="card-header">
+                    <div class="formation-num">04</div>
+                    <div class="formation-title">
+                      <h4>靜思家風</h4>
+                      <p>Jing Si Formation</p>
+                    </div>
+                    <div class="coord-badge" id="coord-jingSi">---</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="landmark-container">
+                      <div class="landmark-title">專屬地標圖樣</div>
+                      <div class="landmark-icon-wrapper" id="icon-jingSi"></div>
+                    </div>
+                    <div class="vector-details">
+                      <div class="vector-item home">
+                        <span class="label">相對身分證：</span>
+                        <span class="val" id="vector-jingSi-home">---</span>
+                      </div>
+                      <div class="vector-item prev">
+                        <span class="label">從行願：</span>
+                        <span class="val" id="vector-jingSi-prev">---</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 5: Lamp -->
+                <div class="formation-card card" id="card-lamp">
+                  <div class="card-glow"></div>
+                  <div class="card-header">
+                    <div class="formation-num">05</div>
+                    <div class="formation-title">
+                      <h4>點一盞燈</h4>
+                      <p>Light a Lamp</p>
+                    </div>
+                    <div class="coord-badge" id="coord-lamp">---</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="landmark-container">
+                      <div class="landmark-title">專屬地標圖樣</div>
+                      <div class="landmark-icon-wrapper" id="icon-lamp"></div>
+                    </div>
+                    <div class="vector-details">
+                      <div class="vector-item home">
+                        <span class="label">相對身分證：</span>
+                        <span class="val" id="vector-lamp-home">---</span>
+                      </div>
+                      <div class="vector-item prev">
+                        <span class="label">從靜思：</span>
+                        <span class="val" id="vector-lamp-prev">---</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 6: Big V -->
+                <div class="formation-card card" id="card-bigV">
+                  <div class="card-glow"></div>
+                  <div class="card-header">
+                    <div class="formation-num">06</div>
+                    <div class="formation-title">
+                      <h4>大Ｖ小Ｖ隊形</h4>
+                      <p>Big V & Small V</p>
+                    </div>
+                    <div class="coord-badge" id="coord-bigV">---</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="landmark-container">
+                      <div class="landmark-title">專屬地標圖樣</div>
+                      <div class="landmark-icon-wrapper" id="icon-bigV"></div>
+                    </div>
+                    <div class="vector-details">
+                      <div class="vector-item home">
+                        <span class="label">相對身分證：</span>
+                        <span class="val" id="vector-bigV-home">---</span>
+                      </div>
+                      <div class="vector-item prev">
+                        <span class="label">從點燈：</span>
+                        <span class="val" id="vector-bigV-prev">---</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </main>
+
+          <!-- Empty/Intro State -->
+          <div class="empty-state card" id="emptyState">
+            <div class="empty-icon-wrapper">
+              <i class="fa-solid fa-street-view empty-icon"></i>
+            </div>
+            <h2>請輸入身分證位置開始查詢</h2>
+            <p>請在上方搜尋框中輸入您的身分證座標位置（例如：「4-46」），即可查詢您在 6 大隊形中的相對跑位網格與地標位置。</p>
+          </div>
+
+
+          <!-- Footer -->
+          <footer class="app-footer-bar">
+            <p>&copy; 2026 大巨蛋演繹種子團隊</p>
+            <p class="sub">以乙舞台為原點 (0,0) 的第二象限絕對地標網格</p>
+          </footer>
+        </div>
+      </div>
+
+      <!-- Phone Bezel Details (Home Indicator Bar) -->
+      <div class="phone-footer">
+        <div class="phone-home-indicator"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
