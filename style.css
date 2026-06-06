@@ -1,28 +1,37 @@
 /* Global Styles & Design Tokens */
 :root {
-  --bg-color: #040811;
-  --panel-bg: rgba(15, 23, 42, 0.7);
-  --panel-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --bg-color: #f1f5f9; /* Light gray-blue background */
+  --panel-bg: rgba(255, 255, 255, 0.85); /* White glassmorphism card background */
+  --panel-border: rgba(15, 23, 42, 0.08); /* Faint dark border */
+  --text-primary: #0f172a; /* Dark slate text */
+  --text-secondary: #475569; /* Slate secondary text */
   
-  /* Color Palette */
-  --blue-color: #38bdf8;
+  /* Color Palette - Optimized for high-contrast light mode */
+  --blue-color: #0284c7; /* Stronger sky blue */
   --teal-color: #0d9488;
-  --gold-color: #f59e0b;
+  --gold-color: #d97706; /* Stronger gold/amber */
   --red-color: #ef4444;
-  --purple-color: #a855f7;
-  --green-color: #22c55e;
+  --purple-color: #7c3aed; /* Stronger purple */
+  --green-color: #16a34a; /* Stronger green */
   --white-color: #ffffff;
   
   /* Category Colors */
-  --color-a-white: #f97316; /* Orange/Red accent for A White */
+  --color-a-white: #ea580c; /* Orange/Red accent for A White */
   --color-a-blue: #0284c7;  /* Sky Blue for A Blue */
-  --color-b-white: #22c55e; /* Green for B White */
-  --color-b-blue: #6366f1;  /* Indigo for B Blue */
+  --color-b-white: #16a34a; /* Green for B White */
+  --color-b-blue: #4f46e5;  /* Indigo for B Blue */
+
+  --input-bg: rgba(241, 245, 249, 0.9); /* Light slate input background */
+  --dropdown-bg: #ffffff; /* White autocomplete dropdown */
+  --dropdown-border: rgba(15, 23, 42, 0.08);
+  --dropdown-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --map-bg: #ffffff; /* Pure white map background */
+  --grid-line-color: rgba(15, 23, 42, 0.06); /* Faint dark grid line */
+  --grid-axis-color: rgba(15, 23, 42, 0.2); /* Clear dark grid axis */
+  --grid-text-color: rgba(15, 23, 42, 0.65); /* Dark grid text label */
 
   --font-family-sans: 'Outfit', 'Noto Sans TC', -apple-system, sans-serif;
-  --card-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
+  --card-shadow: 0 4px 16px 0 rgba(15, 23, 42, 0.05); /* Light premium shadow */
   --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -102,13 +111,13 @@ body {
 .phone-mockup {
   width: 375px;
   height: 812px; /* standard iPhone X/11 ratio */
-  border: 12px solid #1e293b;
+  border: 12px solid #0f172a;
   border-radius: 40px;
-  background: #090d16;
+  background: var(--bg-color);
   position: relative;
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9),
-              0 0 0 4px #334155,
-              0 0 40px rgba(56, 189, 248, 0.12);
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.15),
+              0 0 0 4px #0f172a,
+              0 0 40px rgba(2, 132, 199, 0.05);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -117,14 +126,14 @@ body {
 /* Status Bar & Notch */
 .phone-header {
   height: 44px;
-  background: #090d16;
+  background: var(--bg-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 24px;
   font-size: 13px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
   user-select: none;
   z-index: 100;
 }
@@ -169,13 +178,13 @@ body {
   background: transparent;
 }
 .phone-screen::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
 
 .phone-footer {
   height: 24px;
-  background: #090d16;
+  background: var(--bg-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -271,7 +280,7 @@ body {
 .input-group {
   display: flex;
   align-items: center;
-  background: rgba(8, 12, 20, 0.5);
+  background: var(--input-bg);
   border: 1px solid var(--panel-border);
   border-radius: 10px;
   padding: 2px 12px;
@@ -314,10 +323,10 @@ body {
   top: calc(100% + 6px);
   left: 0;
   width: 100%;
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
   border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+  box-shadow: var(--dropdown-shadow);
   z-index: 120;
   max-height: 200px;
   overflow-y: auto;
@@ -329,11 +338,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--panel-border);
 }
 
 .autocomplete-item:hover {
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(2, 132, 199, 0.08);
 }
 
 .autocomplete-item .name-id {
@@ -356,7 +365,7 @@ body {
 
 .filter-group select {
   width: 100%;
-  background: #0f172a;
+  background: var(--input-bg);
   border: 1px solid var(--panel-border);
   color: var(--text-primary);
   border-radius: 8px;
@@ -533,9 +542,9 @@ body {
 }
 
 .map-display-area {
-  background: rgba(4, 7, 14, 0.85);
+  background: var(--map-bg);
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--panel-border);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -620,36 +629,36 @@ svg {
 }
 
 .stage-watermark .watermark-bg {
-  fill: #050912; /* Solid dark background to completely mask grid lines underneath */
+  fill: #fef08a; /* Solid bright yellow background to completely mask grid lines underneath */
   stroke: none;
 }
 
 .stage-watermark .watermark-line {
   fill: none;
-  stroke: #ffffff; /* Fully bright solid white */
+  stroke: #94a3b8; /* Solid gray lines */
   stroke-width: 0.75;
 }
 
 .stage-watermark .watermark-line-accent {
   fill: none;
-  stroke: #ffffff; /* Fully bright solid white accent */
+  stroke: #475569; /* Solid dark gray accent lines */
   stroke-width: 1.25;
 }
 
 .stage-watermark .watermark-line-yellow {
   fill: none;
-  stroke: #38bdf8; /* Fully bright solid sky blue */
+  stroke: #d97706; /* Solid dark yellow-gold lines */
   stroke-width: 0.75;
 }
 
 .stage-watermark .watermark-rect {
-  fill: #0b1528; /* Solid filled central rectangle background */
-  stroke: #ffffff; /* Fully bright solid white border */
+  fill: #fde047; /* Solid filled yellow central rectangle background */
+  stroke: #475569; /* Solid dark gray border */
   stroke-width: 1.25;
 }
 
 .stage-watermark .watermark-text {
-  fill: #38bdf8; /* Fully bright solid sky blue text */
+  fill: #0f172a; /* Solid dark text */
   font-size: 8px;
   font-weight: bold;
   text-anchor: middle;
@@ -657,18 +666,18 @@ svg {
 
 /* Relative Grid SVG styles */
 .grid-lines line {
-  stroke: rgba(255, 255, 255, 0.04);
+  stroke: var(--grid-line-color);
   stroke-width: 0.5;
 }
 
 .grid-lines line.axis {
-  stroke: rgba(255, 255, 255, 0.12);
+  stroke: var(--grid-axis-color);
   stroke-width: 1;
 }
 
 .grid-lines text {
   font-size: 8px;
-  fill: rgba(255, 255, 255, 0.25);
+  fill: var(--grid-text-color);
   text-anchor: middle;
 }
 
@@ -680,7 +689,16 @@ svg {
   stroke-linejoin: round;
   stroke-dasharray: 6, 4;
   animation: pathDashFlow 15s linear infinite;
-  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.6));
+  filter: drop-shadow(0 0 3px rgba(217, 119, 6, 0.5));
+}
+
+.local-path-line-static {
+  fill: none;
+  stroke: var(--blue-color);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
 }
 
 @keyframes pathDashFlow {
@@ -701,7 +719,7 @@ svg {
 }
 
 .path-node {
-  stroke: #090d16;
+  stroke: var(--map-bg);
   stroke-width: 1.25;
 }
 

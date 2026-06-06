@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // SVG relative Map Elements
   const stageWatermark = document.getElementById('stageWatermark');
   const localGridLines = document.getElementById('localGridLines');
-  const localPath = document.getElementById('localPath');
+  const localPathSegments = document.getElementById('localPathSegments');
   const localPathPoints = document.getElementById('localPathPoints');
   
   // Mobile Navigation Tabs
@@ -494,6 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     stageWatermark.innerHTML = '';
     localGridLines.innerHTML = '';
+    localPathSegments.innerHTML = '';
     localPathPoints.innerHTML = '';
     
     // Update grid clipping path rect
@@ -735,61 +736,51 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     });
     
-    // Filter points to display at most 3 coordinates: Basic, Previous, Current
-    const pointsToDisplay = [];
-    
-    // Always include Basic (index 0)
-    pointsToDisplay.push({
-      ...allPoints[0],
-      role: 'basic',
-      roleLabel: '身分證(起點)'
+    // Map all 6 points to display on the SVG grid
+    const pointsToDisplay = allPoints.map((pt, idx) => {
+      let role = 'prev';
+      let roleLabel = pt.label;
+      if (idx === 0) {
+        role = 'basic';
+        roleLabel = '身分證(起點)';
+      }
+      if (idx === activeFormationIdx) {
+        role = 'current';
+        roleLabel = `目前: ${pt.label}`;
+      }
+      return {
+        ...pt,
+        role,
+        roleLabel
+      };
     });
     
-    if (activeFormationIdx > 0) {
-      const prevIdx = activeFormationIdx - 1;
-      const currIdx = activeFormationIdx;
+    // Clear old path segments
+    localPathSegments.innerHTML = '';
+    
+    // Draw all transition path segments sequentially
+    for (let i = 0; i < allPoints.length - 1; i++) {
+      const startPt = allPoints[i];
+      const endPt = allPoints[i + 1];
       
-      if (prevIdx > 0) {
-        // Previous is a separate node
-        pointsToDisplay.push({
-          ...allPoints[prevIdx],
-          role: 'prev',
-          roleLabel: `上一個: ${allPoints[prevIdx].label}`
-        });
-      } else {
-        // Active index is 1 (Circle). Basic (index 0) is also the Previous node.
-        pointsToDisplay[0].roleLabel = '身分證 (上一個位置)';
-        pointsToDisplay[0].isAlsoPrev = true;
-      }
-      
-      // Include Current node
-      pointsToDisplay.push({
-        ...allPoints[currIdx],
-        role: 'current',
-        roleLabel: `目前: ${allPoints[currIdx].label}`
-      });
-      
-      // Construct and show the path line from Previous to Current
-      const prevPt = allPoints[prevIdx];
-      const currPt = allPoints[currIdx];
-      if (prevPt.pos.x !== currPt.pos.x || prevPt.pos.y !== currPt.pos.y) {
-        const pathD = `M ${prevPt.pos.x} ${prevPt.pos.y} L ${currPt.pos.x} ${currPt.pos.y}`;
-        localPath.setAttribute('d', pathD);
-        localPath.style.display = 'block';
+      // Only draw if there is actual movement between the steps
+      if (startPt.pos.x !== endPt.pos.x || startPt.pos.y !== endPt.pos.y) {
+        const pathD = `M ${startPt.pos.x} ${startPt.pos.y} L ${endPt.pos.x} ${endPt.pos.y}`;
         
-        // Ensure marker fill color is gold to match the path gradient destination
-        const markerPath = document.querySelector('#local-arrow path');
-        if (markerPath) {
-          markerPath.setAttribute('fill', '#fbbf24');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathD);
+        path.setAttribute('fill', 'none');
+        
+        // Highlight active transition step with animation and gradient
+        if (i + 1 === activeFormationIdx) {
+          path.setAttribute('class', 'local-path-line');
+          path.setAttribute('marker-end', 'url(#local-arrow)');
+        } else {
+          path.setAttribute('class', 'local-path-line-static');
+          path.setAttribute('marker-end', 'url(#local-arrow-static)');
         }
-      } else {
-        localPath.style.display = 'none';
+        localPathSegments.appendChild(path);
       }
-    } else {
-      // activeFormationIdx is 0 (Basic only). Style basic as current.
-      pointsToDisplay[0].roleLabel = '目前位置 (身分證)';
-      pointsToDisplay[0].role = 'current';
-      localPath.style.display = 'none';
     }
     
     // Render Display Nodes on SVG
@@ -828,26 +819,48 @@ document.addEventListener('DOMContentLoaded', () => {
       localPathPoints.appendChild(g);
     });
 
-    // Update top coordinate display bar above the SVG map
+    // Update top coordinate display bar (only showing Basic, Prev, and Current for clean layout)
     const coordBar = document.getElementById('mapCoordDisplayBar');
     if (coordBar) {
       coordBar.innerHTML = '';
-      pointsToDisplay.forEach(pt => {
+      
+      const coordBarPoints = [];
+      coordBarPoints.push({
+        ...allPoints[0],
+        role: 'basic',
+        roleLabel: '身分證(起點)'
+      });
+      
+      if (activeFormationIdx > 0) {
+        const prevIdx = activeFormationIdx - 1;
+        if (prevIdx > 0) {
+          coordBarPoints.push({
+            ...allPoints[prevIdx],
+            role: 'prev',
+            roleLabel: `上一個: ${allPoints[prevIdx].label}`
+          });
+        } else {
+          coordBarPoints[0].roleLabel = '身分證 (上一個位置)';
+          coordBarPoints[0].isAlsoPrev = true;
+        }
+        
+        coordBarPoints.push({
+          ...allPoints[activeFormationIdx],
+          role: 'current',
+          roleLabel: `目前: ${allPoints[activeFormationIdx].label}`
+        });
+      } else {
+        coordBarPoints[0].roleLabel = '目前位置 (身分證)';
+        coordBarPoints[0].role = 'current';
+      }
+      
+      coordBarPoints.forEach(pt => {
         const itemDiv = document.createElement('div');
         itemDiv.className = `map-coord-item ${pt.role === 'current' ? 'active-node' : ''}`;
         
         const labelSpan = document.createElement('span');
         labelSpan.className = 'label';
-        
-        let roleName = '';
-        if (pt.role === 'basic') {
-          roleName = pt.isAlsoPrev ? '身分證(上一個)' : '身分證(起點)';
-        } else if (pt.role === 'prev') {
-          roleName = `上一個: ${pt.label}`;
-        } else {
-          roleName = `目前: ${pt.label}`;
-        }
-        labelSpan.textContent = roleName;
+        labelSpan.textContent = pt.roleLabel;
         
         const valSpan = document.createElement('span');
         valSpan.className = 'val';
