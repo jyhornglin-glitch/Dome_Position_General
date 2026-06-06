@@ -496,34 +496,103 @@ document.addEventListener('DOMContentLoaded', () => {
     localGridLines.innerHTML = '';
     localPathPoints.innerHTML = '';
     
+    // Update grid clipping path rect
+    const gridClipRect = document.getElementById('gridClipRect');
+    if (gridClipRect) {
+      gridClipRect.setAttribute('x', GRID_CENTER_X - MAX_GRID_COORD * GRID_SPACING);
+      gridClipRect.setAttribute('y', GRID_CENTER_Y - MAX_GRID_COORD * GRID_SPACING);
+      gridClipRect.setAttribute('width', 2 * MAX_GRID_COORD * GRID_SPACING);
+      gridClipRect.setAttribute('height', 2 * MAX_GRID_COORD * GRID_SPACING);
+    }
+    
     // Draw Stage B blueprint watermark background
     if (!homeCoord.isText) {
-      const stageB_dx_rel = 0 - homeCoord.x;
+      // 1. Draw Runway Central Rectangle: Col = -8 to -4, Row = 32 to 42
+      const rect_x1_rel = -8 - homeCoord.x;
+      const rect_y1_rel = 32 - homeCoord.y;
+      const rect_svgTopLeft = gridToSvg(rect_x1_rel, rect_y1_rel);
+      const rect_width = 4 * GRID_SPACING;
+      const rect_height = 10 * GRID_SPACING;
+      
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', rect_svgTopLeft.x);
+      rect.setAttribute('y', rect_svgTopLeft.y);
+      rect.setAttribute('width', rect_width);
+      rect.setAttribute('height', rect_height);
+      rect.setAttribute('class', 'watermark-rect');
+      stageWatermark.appendChild(rect);
+      
+      // 2. Draw 13 bulging concentric lines representing stage B circles and runway steps
+      // Radii range from 4.5 to 10.5 in steps of 0.5
+      for (let i = 0; i <= 12; i++) {
+        const R_i = 4.5 + i * 0.5;
+        // Runway offset at top and bottom (representing steps width 2.0 to 4.0 relative to center -6)
+        const W_i = 2.0 + i * (2.0 / 12.0);
+        
+        // Relative column coordinates for left, mid, right
+        const col_top = -6 + W_i - homeCoord.x;
+        const col_mid = -6 + R_i - homeCoord.x;
+        const col_bottom = -6 + W_i - homeCoord.x;
+        
+        // Rel rows for transition points
+        const row_top_start = -MAX_GRID_COORD;
+        const row_top_curve = 37 - 12 - homeCoord.y;
+        const row_mid = 37 - homeCoord.y;
+        const row_bottom_curve = 37 + 12 - homeCoord.y;
+        const row_bottom_end = MAX_GRID_COORD;
+        
+        // Project to SVG coordinates
+        const x_top = GRID_CENTER_X + col_top * GRID_SPACING;
+        const x_mid = GRID_CENTER_X + col_mid * GRID_SPACING;
+        const x_bottom = GRID_CENTER_X + col_bottom * GRID_SPACING;
+        
+        const y_top_start = GRID_CENTER_Y + row_top_start * GRID_SPACING;
+        const y_top_curve = GRID_CENTER_Y + row_top_curve * GRID_SPACING;
+        const y_mid = GRID_CENTER_Y + row_mid * GRID_SPACING;
+        const y_bottom_curve = GRID_CENTER_Y + row_bottom_curve * GRID_SPACING;
+        const y_bottom_end = GRID_CENTER_Y + row_bottom_end * GRID_SPACING;
+        
+        // Cubic bezier control Y coordinates
+        const y_control_top = GRID_CENTER_Y + (37 - 6 - homeCoord.y) * GRID_SPACING;
+        const y_control_bottom = GRID_CENTER_Y + (37 + 6 - homeCoord.y) * GRID_SPACING;
+        
+        // Construct SVG path string
+        const pathD = `M ${x_top} ${y_top_start} ` +
+                      `L ${x_top} ${y_top_curve} ` +
+                      `C ${x_top} ${y_control_top}, ${x_mid} ${y_control_top}, ${x_mid} ${y_mid} ` +
+                      `C ${x_mid} ${y_control_bottom}, ${x_bottom} ${y_control_bottom}, ${x_bottom} ${y_bottom_curve} ` +
+                      `L ${x_bottom} ${y_bottom_end}`;
+                      
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathD);
+        path.setAttribute('fill', 'none');
+        
+        // Alternate colors: odd indices (yellow), even indices (gray)
+        if (i % 2 === 1) {
+          path.setAttribute('class', 'watermark-line-yellow');
+        } else {
+          // Highlight outermost boundary line (index 12, R = 10.5)
+          if (i === 12) {
+            path.setAttribute('class', 'watermark-line-accent');
+          } else {
+            path.setAttribute('class', 'watermark-line');
+          }
+        }
+        stageWatermark.appendChild(path);
+      }
+      
+      // 3. Draw radial stairs/steps on Stage B: radiating from center (-6, 37)
+      // Since it's centered at Col = -6, Row = 37:
+      const stageB_dx_rel = -6 - homeCoord.x;
       const stageB_dy_rel = 37 - homeCoord.y;
       const stageB_svg = gridToSvg(stageB_dx_rel, stageB_dy_rel);
       
-      // Radii of concentric circles for Stage B steps
-      const stageB_radii = [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5];
-      
-      stageB_radii.forEach(r => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', stageB_svg.x);
-        circle.setAttribute('cy', stageB_svg.y);
-        circle.setAttribute('r', r * GRID_SPACING);
-        if (r === 3.5 || r === 7.5) {
-          circle.setAttribute('class', 'watermark-line-accent');
-        } else {
-          circle.setAttribute('class', 'watermark-line');
-        }
-        stageWatermark.appendChild(circle);
-      });
-      
-      // Radial stairs/steps dividing the stage
+      // Radial stairs radiating outwards to the right (angles from -45 to 45)
       const angles = [-45, -30, -15, 0, 15, 30, 45];
       angles.forEach(angle => {
         const rad = (angle * Math.PI) / 180;
-        const r_start = 3.5 * GRID_SPACING;
-        const r_end = 7.5 * GRID_SPACING;
+        const r_start = 4.5 * GRID_SPACING; // Innermost step circle
+        const r_end = 10.5 * GRID_SPACING;  // Outermost step circle
         
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         line.setAttribute('x1', stageB_svg.x + r_start * Math.cos(rad));
@@ -534,22 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stageWatermark.appendChild(line);
       });
       
-      // Runway boundaries (vertical lines at absolute Col = 1.5 and Col = 2.5)
-      const runwayCols = [1.5, 2.5];
-      runwayCols.forEach(col => {
-        const r_dx_rel = col - homeCoord.x;
-        const r_svgX = GRID_CENTER_X + r_dx_rel * GRID_SPACING;
-        
-        const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        vLine.setAttribute('x1', r_svgX);
-        vLine.setAttribute('y1', GRID_CENTER_Y - MAX_GRID_COORD * GRID_SPACING);
-        vLine.setAttribute('x2', r_svgX);
-        vLine.setAttribute('y2', GRID_CENTER_Y + MAX_GRID_COORD * GRID_SPACING);
-        vLine.setAttribute('class', 'watermark-line-accent');
-        stageWatermark.appendChild(vLine);
-      });
-      
-      // Faint label "乙舞台"
+      // 4. Draw Faint text label "乙舞台" centered at (-6, 37)
       const stageBText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       stageBText.setAttribute('x', stageB_svg.x);
       stageBText.setAttribute('y', stageB_svg.y + 3);

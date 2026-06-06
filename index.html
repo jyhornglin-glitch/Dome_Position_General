@@ -133,9 +133,13 @@
                           <stop offset="0%" stop-color="#38bdf8" /> <!-- Blue (previous point color) -->
                           <stop offset="100%" stop-color="#fbbf24" /> <!-- Gold (current point color) -->
                         </linearGradient>
+                        <!-- Grid clipping path -->
+                        <clipPath id="gridClip">
+                          <rect id="gridClipRect" x="0" y="0" width="360" height="360" />
+                        </clipPath>
                       </defs>
                       <!-- Stage B watermark blueprint background -->
-                      <g id="stageWatermark" class="stage-watermark"></g>
+                      <g id="stageWatermark" class="stage-watermark" clip-path="url(#gridClip)"></g>
                       <!-- Dynamic coordinate grid -->
                       <g id="localGridLines" class="grid-lines"></g>
                       <!-- Dynamic relative path line -->
