@@ -507,6 +507,34 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Draw Stage B blueprint watermark background
     if (!homeCoord.isText) {
+      // 0. Draw Stage Background to mask the grid lines underneath
+      // Runway Background: Col = -8 to -2, running vertically
+      const bg_x1_rel = -8 - homeCoord.x;
+      const bg_y1_rel = -MAX_GRID_COORD;
+      const bg_svgTopLeft = gridToSvg(bg_x1_rel, bg_y1_rel);
+      const bg_width = 6 * GRID_SPACING;
+      const bg_height = 2 * MAX_GRID_COORD * GRID_SPACING;
+      
+      const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bgRect.setAttribute('x', bg_svgTopLeft.x);
+      bgRect.setAttribute('y', bg_svgTopLeft.y);
+      bgRect.setAttribute('width', bg_width);
+      bgRect.setAttribute('height', bg_height);
+      bgRect.setAttribute('class', 'watermark-bg');
+      stageWatermark.appendChild(bgRect);
+      
+      // Stage B Circular Background: Col = -6, Row = 37, Radius = 10.5
+      const stageB_dx_rel = -6 - homeCoord.x;
+      const stageB_dy_rel = 37 - homeCoord.y;
+      const stageB_svg = gridToSvg(stageB_dx_rel, stageB_dy_rel);
+      
+      const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      bgCircle.setAttribute('cx', stageB_svg.x);
+      bgCircle.setAttribute('cy', stageB_svg.y);
+      bgCircle.setAttribute('r', 10.5 * GRID_SPACING);
+      bgCircle.setAttribute('class', 'watermark-bg');
+      stageWatermark.appendChild(bgCircle);
+
       // 1. Draw Runway Central Rectangle: Col = -8 to -4, Row = 32 to 42
       const rect_x1_rel = -8 - homeCoord.x;
       const rect_y1_rel = 32 - homeCoord.y;
@@ -583,9 +611,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // 3. Draw radial stairs/steps on Stage B: radiating from center (-6, 37)
       // Since it's centered at Col = -6, Row = 37:
-      const stageB_dx_rel = -6 - homeCoord.x;
-      const stageB_dy_rel = 37 - homeCoord.y;
-      const stageB_svg = gridToSvg(stageB_dx_rel, stageB_dy_rel);
       
       // Radial stairs radiating outwards to the right (angles from -45 to 45)
       const angles = [-45, -30, -15, 0, 15, 30, 45];
