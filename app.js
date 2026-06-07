@@ -353,6 +353,20 @@ document.addEventListener('DOMContentLoaded', () => {
       // Render HTML landmark icons
       drawHtmlLandmarkIcon(iconWrapper, f.key, currentPerformer.category, fields.name);
       
+      // Render lyrics inside Card
+      let lyricsItem = card.querySelector('.lyrics-item');
+      if (!lyricsItem) {
+        lyricsItem = document.createElement('div');
+        lyricsItem.className = 'lyrics-item';
+        lyricsItem.innerHTML = `
+          <div class="lyrics-title"><i class="fa-solid fa-microphone"></i> 唱誦提示</div>
+          <div class="lyrics-text"></div>
+        `;
+        card.querySelector('.card-body').appendChild(lyricsItem);
+      }
+      const lyricsLines = (typeof chantLyrics !== 'undefined' ? chantLyrics[f.key] : []) || [];
+      lyricsItem.querySelector('.lyrics-text').textContent = lyricsLines.join('\n');
+      
       const currentCoord = parseCoordinate(coordStr);
       const basicCoord = parseCoordinate(fields.coordinate);
       
@@ -1004,6 +1018,19 @@ document.addEventListener('DOMContentLoaded', () => {
           const prevName = formations[activeFormationIdx - 1].name.split(' ')[0];
           
           mapMovementGuide.innerHTML = `<i class="fa-solid fa-route" style="color: var(--blue-color); margin-right: 5px;"></i><strong>隊形移動</strong>：從 ${prevName} <strong>(${prevCoordStr})</strong> 移動至 ${f.name.split(' ')[0]} <strong>(${coordStr})</strong>。<br>跑法：<strong>${movement}</strong>。`;
+        }
+      }
+
+      // Update lyrics guide text below the map
+      const mapLyricsGuide = document.getElementById('mapLyricsGuide');
+      if (mapLyricsGuide) {
+        const f = formations[activeFormationIdx];
+        const lyricsLines = (typeof chantLyrics !== 'undefined' ? chantLyrics[f.key] : []) || [];
+        if (lyricsLines.length > 0) {
+          mapLyricsGuide.innerHTML = `<div class="lyrics-title"><i class="fa-solid fa-microphone"></i> <strong>唱誦提示</strong> (${f.label})</div><div class="lyrics-text">${lyricsLines.join('\n')}</div>`;
+          mapLyricsGuide.style.display = 'block';
+        } else {
+          mapLyricsGuide.style.display = 'none';
         }
       }
     }
