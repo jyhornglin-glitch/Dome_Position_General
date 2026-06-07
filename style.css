@@ -742,7 +742,7 @@ svg {
 .local-path-line {
   fill: none;
   stroke: url(#local-path-grad);
-  stroke-width: 2.5;
+  stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 6, 4;
@@ -753,7 +753,7 @@ svg {
 .local-path-line-static {
   fill: none;
   stroke: var(--blue-color);
-  stroke-width: 2.0;
+  stroke-width: 1.4;
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.85;

@@ -1357,7 +1357,7 @@ document.addEventListener('DOMContentLoaded', () => {
           .local-path-line {
             fill: none;
             stroke: url(#local-path-grad);
-            stroke-width: 2.5px;
+            stroke-width: 1.75px;
             stroke-linecap: round;
             stroke-linejoin: round;
             stroke-dasharray: 6, 4;
@@ -1365,7 +1365,7 @@ document.addEventListener('DOMContentLoaded', () => {
           .local-path-line-static {
             fill: none;
             stroke: #0284c7;
-            stroke-width: 1.5px;
+            stroke-width: 1.05px;
             stroke-linecap: round;
             stroke-linejoin: round;
             opacity: 0.55;
