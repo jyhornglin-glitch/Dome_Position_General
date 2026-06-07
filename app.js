@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
     while (MAX_GRID_COORD < maxOffset + 1.5) {
       MAX_GRID_COORD += 4;
     }
-    GRID_SPACING = 150 / MAX_GRID_COORD;
+    GRID_SPACING = 180 / MAX_GRID_COORD;
 
     // Adjust label frequency based on coordinate density
     let labelStep = 2;
