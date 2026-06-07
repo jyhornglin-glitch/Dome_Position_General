@@ -1697,6 +1697,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function startDrag(e) {
       if (zoomLevel <= 1.0) return;
       
+      // Disable dragging if starting on a landmark node
+      if (e.target.closest('.path-point')) return;
+      
       isDragging = true;
       svgEl.classList.add('dragging');
       

@@ -765,6 +765,7 @@ svg {
 
 .path-point {
   transition: var(--transition-smooth);
+  cursor: pointer;
 }
 
 .path-point.active-formation {
