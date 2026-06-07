@@ -77,7 +77,7 @@ const performersData = [
   { category: "A白", id: "26-36", name: "缺", circle: "22.5-37", xingYuan: "11-42.5", jingSi: "26-36", lamp: "7.7-34.8", bigV: "15.6-45" },
   { category: "A白", id: "26-37", name: "缺", circle: "22.5-38", xingYuan: "11-43.5", jingSi: "26-37", lamp: "9.7-36", bigV: "15.1-46" },
   { category: "A白", id: "26-38", name: "缺", circle: "22.5-39", xingYuan: "11-44", jingSi: "26-38", lamp: "10.7-38.1", bigV: "14.8-46.8" },
-  { category: "A白", id: "27-36", name: "缺", circle: "23.5-37.5", xingYuan: "12-42", jingSi: "27-36", lamp: "8.3-35.1", bigV: "16.6-45" },
+  { category: "A白", id: "27-36", name: "呂美香", circle: "23.6-37.3", xingYuan: "12-42.2", jingSi: "27-36", lamp: "8.7-34.5", bigV: "16.7-45.1" },
   { category: "A白", id: "27-37", name: "缺", circle: "23.5-38.5", xingYuan: "12-43", jingSi: "27-37", lamp: "10.2-36.5", bigV: "16.1-46" },
   { category: "A白", id: "27-38", name: "缺", circle: "23.5-39.5", xingYuan: "12-44", jingSi: "27-38", lamp: "10.8-38.8", bigV: "15.8-16.8" },
   { category: "B藍", id: "28-39", name: "缺", circle: "24.5-40", xingYuan: "31.5-36", jingSi: "28-39", lamp: "25-49", bigV: "29.5-45" },
@@ -145,7 +145,6 @@ const performersData = [
   { category: "A白", id: "3-54", name: "許銘量", circle: "10.3-46.7", xingYuan: "舞台上", jingSi: "上階梯", lamp: "舞台上", bigV: "4.5-44" },
   { category: "A白", id: "3-55", name: "陳志嶄", circle: "9.8-47.4", xingYuan: "舞台上", jingSi: "上階梯", lamp: "舞台上", bigV: "4-45" },
   { category: "A白", id: "3-56", name: "高偉誠", circle: "9.3-48.4", xingYuan: "舞台上", jingSi: "上階梯", lamp: "舞台上", bigV: "8.5-51.5" },
-  { category: "A白", id: "27-36", name: "呂美香", circle: "23.6-37.3", xingYuan: "12-42.2", jingSi: "27-36", lamp: "8.7-34.5", bigV: "16.7-45.1" },
 ];
 
 // Export if in node environment, otherwise make it global
