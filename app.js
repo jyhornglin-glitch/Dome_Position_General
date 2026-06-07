@@ -1257,8 +1257,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Convert SVG element to Canvas and trigger PNG download
-  function downloadSvgAsPng(svgEl, filename) {
+  // Convert SVG element to Canvas and return PNG base64 Data URL
+  function convertSvgToPngDataUrl(svgEl) {
     return new Promise((resolve, reject) => {
       try {
         const clonedSvg = svgEl.cloneNode(true);
@@ -1425,15 +1425,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Clean URL
             URL.revokeObjectURL(blobURL);
             
-            // Trigger download
             const pngURL = canvas.toDataURL('image/png');
-            const downloadLink = document.createElement('a');
-            downloadLink.href = pngURL;
-            downloadLink.download = filename;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            resolve();
+            resolve(pngURL);
           } catch (err) {
             reject(err);
           }
@@ -1446,6 +1439,20 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         reject(err);
       }
+    });
+  }
+
+  // Download single SVG as a 1-page PDF
+  function downloadSvgAsPdf(svgEl, filename) {
+    return convertSvgToPngDataUrl(svgEl).then(pngDataUrl => {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [720, 720]
+      });
+      pdf.addImage(pngDataUrl, 'PNG', 0, 0, 720, 720);
+      pdf.save(filename);
     });
   }
 
@@ -1495,15 +1502,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Download button
         const dlBtn = document.createElement('button');
         dlBtn.className = 'control-btn modal-map-btn';
-        dlBtn.innerHTML = `<i class="fa-solid fa-download"></i> 下載`;
+        dlBtn.innerHTML = `<i class="fa-solid fa-download"></i> 下載 PDF`;
         dlBtn.addEventListener('click', () => {
-          const filename = `${fields.name}_${fields.coordinate}_${idx + 1}_${f.label}.png`;
+          const filename = `${fields.name}_${fields.coordinate}_${idx + 1}_${f.label}.pdf`;
           dlBtn.disabled = true;
           dlBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>...`;
-          downloadSvgAsPng(previewSvg, filename)
+          downloadSvgAsPdf(previewSvg, filename)
             .finally(() => {
               dlBtn.disabled = false;
-              dlBtn.innerHTML = `<i class="fa-solid fa-download"></i> 下載`;
+              dlBtn.innerHTML = `<i class="fa-solid fa-download"></i> 下載 PDF`;
             });
         });
         
@@ -1528,7 +1535,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 4. Download All sequentially
+    // 4. Download All combined as a single multi-page PDF
     downloadAllBtn.addEventListener('click', async () => {
       if (!currentPerformer) return;
       downloadAllBtn.disabled = true;
@@ -1536,27 +1543,41 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const fields = getPerformerFields(currentPerformer);
       
-      for (let idx = 0; idx < formations.length; idx++) {
-        const f = formations[idx];
-        downloadAllBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 下載中 (${idx + 1}/${formations.length})`;
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [720, 720]
+        });
         
-        const filename = `${fields.name}_${fields.coordinate}_${idx + 1}_${f.label}.png`;
-        const card = modalBody.children[idx];
-        if (card) {
-          const svg = card.querySelector('svg');
-          if (svg) {
-            try {
-              await downloadSvgAsPng(svg, filename);
-              // Small delay to allow sequential downloads without overlap
-              await new Promise(r => setTimeout(r, 600));
-            } catch (err) {
-              console.error('Failed to download image ' + idx, err);
+        for (let idx = 0; idx < formations.length; idx++) {
+          downloadAllBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 轉換中 (${idx + 1}/${formations.length})`;
+          
+          const card = modalBody.children[idx];
+          if (card) {
+            const svg = card.querySelector('svg');
+            if (svg) {
+              const pngDataUrl = await convertSvgToPngDataUrl(svg);
+              if (idx > 0) {
+                pdf.addPage([720, 720]);
+              }
+              pdf.addImage(pngDataUrl, 'PNG', 0, 0, 720, 720);
             }
           }
+          // Small delay to allow canvas rendering thread to breathe
+          await new Promise(r => setTimeout(r, 100));
         }
+        
+        const filename = `${fields.name}_${fields.coordinate}_所有定點.pdf`;
+        pdf.save(filename);
+        
+        downloadAllBtn.innerHTML = `<i class="fa-solid fa-check"></i> 下載完成`;
+      } catch (err) {
+        console.error('Failed to download combined PDF', err);
+        downloadAllBtn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 錯誤`;
       }
       
-      downloadAllBtn.innerHTML = `<i class="fa-solid fa-check"></i> 下載完成`;
       setTimeout(() => {
         downloadAllBtn.disabled = false;
         downloadAllBtn.innerHTML = originalText;
