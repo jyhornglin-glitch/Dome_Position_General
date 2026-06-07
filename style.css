@@ -807,7 +807,7 @@ svg {
   fill: rgba(8, 12, 20, 0.9);
   stroke: rgba(255, 255, 255, 0.08);
   stroke-width: 0.5;
-  rx: 2;
+  rx: 1;
 }
 
 .path-label-bg.bg-current {
@@ -817,7 +817,7 @@ svg {
 }
 
 .path-label-text {
-  font-size: 7.5px;
+  font-size: 3.75px;
   font-weight: 700;
   fill: #f8fafc;
   text-anchor: middle;

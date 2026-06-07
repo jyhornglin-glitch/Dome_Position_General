@@ -900,12 +900,12 @@ document.addEventListener('DOMContentLoaded', () => {
       // Render the sticker image dynamically sized
       drawSvgLandmarkImage(g, pt.key, category, pt.pos.x, pt.pos.y, landmarkSize, isMainSvg);
       
-      // Draw coordinate label under the node
+      // Draw coordinate label under the node (scaled down by 50%)
       if (pt.coord && pt.coord.text) {
         const textLength = pt.coord.text.length;
-        const bgWidth = textLength * 5.2 + 6;
-        const bgHeight = 11;
-        const labelY = pt.pos.y + landmarkSize / 2 + 8; // position label dynamically below the node
+        const bgWidth = (textLength * 5.2 + 6) * 0.5;
+        const bgHeight = 5.5;
+        const labelY = pt.pos.y + landmarkSize / 2 + 5.5; // position label closer to node
         
         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         rect.setAttribute('x', pt.pos.x - bgWidth / 2);
@@ -919,7 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         textEl.setAttribute('x', pt.pos.x);
-        textEl.setAttribute('y', labelY + 2.5); // vertical baseline alignment
+        textEl.setAttribute('y', labelY + 1.25); // adjusted vertical alignment
         let textClass = 'path-label-text';
         if (pt.role === 'current') textClass += ' label-current';
         else if (pt.role === 'prev') textClass += ' label-prev';
@@ -1390,7 +1390,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fill: rgba(8, 12, 20, 0.9);
             stroke: rgba(255, 255, 255, 0.08);
             stroke-width: 0.5px;
-            rx: 2px;
+            rx: 1px;
           }
           .path-label-bg.bg-current {
             fill: rgba(15, 23, 42, 0.95);
@@ -1399,7 +1399,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           .path-label-text {
             font-family: 'Outfit', 'Noto Sans TC', -apple-system, sans-serif;
-            font-size: 7.5px;
+            font-size: 3.75px;
             font-weight: 700;
             fill: #f8fafc;
             text-anchor: middle;
