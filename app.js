@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
         topText.setAttribute('y', y - 1.5);
         topText.setAttribute('text-anchor', 'middle');
         topText.setAttribute('class', 'sticker-coord-text');
-        topText.textContent = parts[0];
+        topText.textContent = parts[0].padStart(2, '0');
         parentGroup.appendChild(topText);
         
         // Bottom number
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bottomText.setAttribute('y', y + 4.8);
         bottomText.setAttribute('text-anchor', 'middle');
         bottomText.setAttribute('class', 'sticker-coord-text');
-        bottomText.textContent = parts[1];
+        bottomText.textContent = parts[1].padStart(2, '0');
         parentGroup.appendChild(bottomText);
       } else {
         const overlayText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
         overlayText.setAttribute('y', y + 2.2);
         overlayText.setAttribute('text-anchor', 'middle');
         overlayText.setAttribute('class', 'sticker-coord-text');
-        overlayText.textContent = fields.coordinate;
+        overlayText.textContent = fields.coordinate.padStart(2, '0');
         parentGroup.appendChild(overlayText);
       }
     }
@@ -1074,14 +1074,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (parts.length === 2) {
         const topSpan = document.createElement('span');
         topSpan.className = 'sticker-coord-part-html top';
-        topSpan.textContent = parts[0];
+        topSpan.textContent = parts[0].padStart(2, '0');
         
         const lineDiv = document.createElement('div');
         lineDiv.className = 'sticker-coord-line-html';
         
         const bottomSpan = document.createElement('span');
         bottomSpan.className = 'sticker-coord-part-html bottom';
-        bottomSpan.textContent = parts[1];
+        bottomSpan.textContent = parts[1].padStart(2, '0');
         
         circleOverlay.appendChild(topSpan);
         circleOverlay.appendChild(lineDiv);
@@ -1089,7 +1089,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         const textSpan = document.createElement('span');
         textSpan.className = 'sticker-coord-text-html';
-        textSpan.textContent = fields.coordinate;
+        textSpan.textContent = fields.coordinate.padStart(2, '0');
         circleOverlay.appendChild(textSpan);
       }
       
