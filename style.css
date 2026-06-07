@@ -753,10 +753,10 @@ svg {
 .local-path-line-static {
   fill: none;
   stroke: var(--blue-color);
-  stroke-width: 1.5;
+  stroke-width: 2.0;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.55;
+  opacity: 0.85;
 }
 
 @keyframes pathDashFlow {
@@ -788,36 +788,15 @@ svg {
 
 .path-node-glow.glow-basic {
   fill: var(--red-color);
-  animation: pulseGlowBasic 1.5s infinite ease-in-out;
 }
 
 .path-node-glow.glow-prev {
   fill: var(--blue-color);
-  animation: pulseGlowPrev 1.5s infinite ease-in-out;
 }
 
 .path-node-glow.glow-current {
   fill: var(--gold-color);
   opacity: 0.5;
-  animation: pulseGlowCurrent 1.2s infinite ease-in-out;
-}
-
-@keyframes pulseGlowBasic {
-  0% { r: 12; opacity: 0.15; }
-  50% { r: 18; opacity: 0.4; }
-  100% { r: 12; opacity: 0.15; }
-}
-
-@keyframes pulseGlowPrev {
-  0% { r: 12; opacity: 0.15; }
-  50% { r: 18; opacity: 0.4; }
-  100% { r: 12; opacity: 0.15; }
-}
-
-@keyframes pulseGlowCurrent {
-  0% { r: 14; opacity: 0.25; }
-  50% { r: 24; opacity: 0.7; }
-  100% { r: 14; opacity: 0.25; }
 }
 
 .svg-sticker-image {

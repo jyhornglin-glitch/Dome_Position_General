@@ -852,7 +852,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Draw all transition path segments sequentially
     for (let i = 0; i < allPoints.length - 1; i++) {
-      if (!showFull && i + 1 > fIdx) continue;
+      if (!showFull && i + 1 !== fIdx) continue;
       
       const startPt = allPoints[i];
       const endPt = allPoints[i + 1];
