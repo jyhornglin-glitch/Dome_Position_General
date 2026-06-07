@@ -1258,7 +1258,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Convert SVG element to Canvas and return PNG base64 Data URL
-  function convertSvgToPngDataUrl(svgEl) {
+  function convertSvgToPngDataUrl(svgEl, stepName = '') {
     return new Promise((resolve, reject) => {
       try {
         const clonedSvg = svgEl.cloneNode(true);
@@ -1394,8 +1394,26 @@ document.addEventListener('DOMContentLoaded', () => {
             fill: #000000;
             text-anchor: middle;
           }
+          .svg-pdf-title-text {
+            font-family: 'Outfit', 'Noto Sans TC', -apple-system, sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            fill: #0f172a;
+            text-anchor: middle;
+          }
         `;
         clonedSvg.insertBefore(styleEl, clonedSvg.firstChild);
+        
+        // 2.5. Inject step name title if provided
+        if (stepName) {
+          const titleText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          titleText.setAttribute('x', '360');
+          titleText.setAttribute('y', '45');
+          titleText.setAttribute('text-anchor', 'middle');
+          titleText.setAttribute('class', 'svg-pdf-title-text');
+          titleText.textContent = stepName;
+          clonedSvg.appendChild(titleText);
+        }
         
         // 3. Serialize to XML string
         const serializer = new XMLSerializer();
@@ -1443,8 +1461,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Download single SVG as a 1-page PDF
-  function downloadSvgAsPdf(svgEl, filename) {
-    return convertSvgToPngDataUrl(svgEl).then(pngDataUrl => {
+  function downloadSvgAsPdf(svgEl, filename, stepName) {
+    return convertSvgToPngDataUrl(svgEl, stepName).then(pngDataUrl => {
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -1507,7 +1525,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const filename = `${fields.name}_${fields.coordinate}_${idx + 1}_${f.label}.pdf`;
           dlBtn.disabled = true;
           dlBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>...`;
-          downloadSvgAsPdf(previewSvg, filename)
+          const stepName = `${String(idx + 1).padStart(2, '0')}. ${f.name}`;
+          downloadSvgAsPdf(previewSvg, filename, stepName)
             .finally(() => {
               dlBtn.disabled = false;
               dlBtn.innerHTML = `<i class="fa-solid fa-download"></i> 下載 PDF`;
@@ -1558,7 +1577,9 @@ document.addEventListener('DOMContentLoaded', () => {
           if (card) {
             const svg = card.querySelector('svg');
             if (svg) {
-              const pngDataUrl = await convertSvgToPngDataUrl(svg);
+              const f = formations[idx];
+              const stepName = `${String(idx + 1).padStart(2, '0')}. ${f.name}`;
+              const pngDataUrl = await convertSvgToPngDataUrl(svg, stepName);
               if (idx > 0) {
                 pdf.addPage([720, 720]);
               }
