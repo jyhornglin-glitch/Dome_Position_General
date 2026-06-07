@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let zoomLevel = 1.0;
   let panX = 0;
   let panY = 0;
+  let rotationAngle = 0;
 
   // Relative Grid coordinate configuration
   const GRID_CENTER_X = 180;
@@ -1051,8 +1052,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Manage zoom viewport centering on active point
     if (isMainSvg) {
       if (zoomLevel > 1.0) {
-        panX = allPoints[fIdx].pos.x - 180;
-        panY = allPoints[fIdx].pos.y - 180;
+        // Calculate rotated coordinates to center correctly if rotated
+        const rad = (rotationAngle * Math.PI) / 180;
+        const rotatedX = 180 + (allPoints[fIdx].pos.x - 180) * Math.cos(rad) - (allPoints[fIdx].pos.y - 180) * Math.sin(rad);
+        const rotatedY = 180 + (allPoints[fIdx].pos.x - 180) * Math.sin(rad) + (allPoints[fIdx].pos.y - 180) * Math.cos(rad);
+        panX = rotatedX - 180;
+        panY = rotatedY - 180;
       } else {
         panX = 0;
         panY = 0;
@@ -1641,13 +1646,23 @@ document.addEventListener('DOMContentLoaded', () => {
     svgEl.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
   }
 
-  // Reset zoom and pan variables and update viewBox
+  // Apply rotation transform to local grid content group
+  function applyRotation() {
+    const contentEl = document.getElementById('localGridContent');
+    if (contentEl) {
+      contentEl.setAttribute('transform', `rotate(${rotationAngle}, 180, 180)`);
+    }
+  }
+
+  // Reset zoom, pan, and rotation variables and update
   function resetZoomAndPan() {
     zoomLevel = 1.0;
     panX = 0;
     panY = 0;
+    rotationAngle = 0;
     const svgEl = document.getElementById('localGridSvg');
     updateSvgViewBox(svgEl);
+    applyRotation();
   }
 
   // Bind zoom and pan controls and drag/swipe handlers
@@ -1658,6 +1673,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomResetBtn = document.getElementById('zoomResetBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const rotateCcwBtn = document.getElementById('rotateCcwBtn');
+    const rotateCwBtn = document.getElementById('rotateCwBtn');
     
     // Zoom In
     zoomInBtn.addEventListener('click', () => {
@@ -1675,6 +1692,22 @@ document.addEventListener('DOMContentLoaded', () => {
     zoomResetBtn.addEventListener('click', () => {
       resetZoomAndPan();
     });
+
+    // Rotate CCW
+    if (rotateCcwBtn) {
+      rotateCcwBtn.addEventListener('click', () => {
+        rotationAngle = (rotationAngle - 45) % 360;
+        applyRotation();
+      });
+    }
+
+    // Rotate CW
+    if (rotateCwBtn) {
+      rotateCwBtn.addEventListener('click', () => {
+        rotationAngle = (rotationAngle + 45) % 360;
+        applyRotation();
+      });
+    }
     
     // Drag/Pan Logic
     let isDragging = false;

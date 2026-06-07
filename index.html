@@ -127,11 +127,13 @@
                   
                   <div id="mapCoordDisplayBar" class="map-coord-display-bar"></div>
                   <div class="svg-wrapper">
-                    <!-- Floating Zoom Controls -->
+                    <!-- Floating Zoom & Rotation Controls -->
                     <div class="map-zoom-controls">
                       <button id="zoomInBtn" class="zoom-btn" title="放大"><i class="fa-solid fa-plus"></i></button>
                       <button id="zoomResetBtn" class="zoom-btn" title="重設"><i class="fa-solid fa-arrows-to-dot"></i></button>
                       <button id="zoomOutBtn" class="zoom-btn" title="縮小"><i class="fa-solid fa-minus"></i></button>
+                      <button id="rotateCcwBtn" class="zoom-btn" title="逆時針旋轉 45°"><i class="fa-solid fa-rotate-left"></i></button>
+                      <button id="rotateCwBtn" class="zoom-btn" title="順時針旋轉 45°"><i class="fa-solid fa-rotate-right"></i></button>
                     </div>
                     <!-- 360x360 relative coordinate system view -->
                     <svg id="localGridSvg" viewBox="0 0 360 360">
@@ -194,14 +196,16 @@
                           <rect id="gridClipRect" x="0" y="0" width="360" height="360" />
                         </clipPath>
                       </defs>
-                      <!-- Dynamic coordinate grid -->
-                      <g id="localGridLines" class="grid-lines"></g>
-                      <!-- Stage B watermark blueprint background -->
-                      <g id="stageWatermark" class="stage-watermark" clip-path="url(#gridClip)"></g>
-                      <!-- Dynamic relative path line -->
-                      <g id="localPathGroup">
-                        <g id="localPathSegments"></g>
-                        <g id="localPathPoints"></g>
+                      <g id="localGridContent">
+                        <!-- Dynamic coordinate grid -->
+                        <g id="localGridLines" class="grid-lines"></g>
+                        <!-- Stage B watermark blueprint background -->
+                        <g id="stageWatermark" class="stage-watermark" clip-path="url(#gridClip)"></g>
+                        <!-- Dynamic relative path line -->
+                        <g id="localPathGroup">
+                          <g id="localPathSegments"></g>
+                          <g id="localPathPoints"></g>
+                        </g>
                       </g>
                     </svg>
                   </div>
