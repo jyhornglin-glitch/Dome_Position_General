@@ -1713,12 +1713,36 @@ svg {
   height: 24px;
   border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
+}
+
+.sticker-coord-part-html {
+  font-family: 'Outfit', 'Noto Sans TC', -apple-system, sans-serif;
+  font-size: 7.5px;
+  font-weight: 800;
+  color: #000000;
+  line-height: 1;
+  text-align: center;
+}
+
+.sticker-coord-part-html.top {
+  margin-bottom: 0.5px;
+}
+
+.sticker-coord-part-html.bottom {
+  margin-top: 0.5px;
+}
+
+.sticker-coord-line-html {
+  width: 14px;
+  height: 1px;
+  background-color: #ffffff;
 }
 
 .sticker-coord-text-html {
@@ -1732,7 +1756,7 @@ svg {
 
 .sticker-coord-text {
   font-family: 'Outfit', 'Noto Sans TC', -apple-system, sans-serif;
-  font-size: 6px;
+  font-size: 5.2px;
   font-weight: 800;
   fill: #000000;
   text-anchor: middle;
