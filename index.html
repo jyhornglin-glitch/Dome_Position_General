@@ -127,6 +127,12 @@
                   
                   <div id="mapCoordDisplayBar" class="map-coord-display-bar"></div>
                   <div class="svg-wrapper">
+                    <!-- Floating Zoom Controls -->
+                    <div class="map-zoom-controls">
+                      <button id="zoomInBtn" class="zoom-btn" title="放大"><i class="fa-solid fa-plus"></i></button>
+                      <button id="zoomResetBtn" class="zoom-btn" title="重設"><i class="fa-solid fa-arrows-to-dot"></i></button>
+                      <button id="zoomOutBtn" class="zoom-btn" title="縮小"><i class="fa-solid fa-minus"></i></button>
+                    </div>
                     <!-- 360x360 relative coordinate system view -->
                     <svg id="localGridSvg" viewBox="0 0 360 360">
                       <defs>

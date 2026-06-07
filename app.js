@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPerformer = null;
   let activeTab = 'localGrid'; // Default mobile tab is Grid view
   let activeFormationIdx = 0; // Current active formation index (0 to 5)
+  let zoomLevel = 1.0;
+  let panX = 0;
+  let panY = 0;
 
   // Relative Grid coordinate configuration
   const GRID_CENTER_X = 180;
@@ -82,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupMobileTabs();
     setupEventListeners();
     setupDownloadListeners();
+    setupZoomAndPan();
   }
 
   // Real-time status bar clock
@@ -295,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function selectPerformer(performer) {
     currentPerformer = performer;
     activeFormationIdx = 0; // Reset active formation index to 0 (Basic)
+    resetZoomAndPan();
     
     // Reset trajectory toggle checkbox to unchecked
     const showFullTrajectory = document.getElementById('showFullTrajectory');
@@ -1051,8 +1056,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     
-    // Restore previous scale for preview renders to keep main SVG state pure
-    if (!isMainSvg) {
+    // Manage zoom viewport centering on active point
+    if (isMainSvg) {
+      if (zoomLevel > 1.0) {
+        panX = allPoints[fIdx].pos.x - 180;
+        panY = allPoints[fIdx].pos.y - 180;
+      } else {
+        panX = 0;
+        panY = 0;
+      }
+      updateSvgViewBox(svgEl);
+    } else {
+      // Restore previous scale for preview renders to keep main SVG state pure
       MAX_GRID_COORD = originalMaxGridCoord;
       GRID_SPACING = originalGridSpacing;
     }
@@ -1278,6 +1293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return new Promise((resolve, reject) => {
       try {
         const clonedSvg = svgEl.cloneNode(true);
+        clonedSvg.setAttribute('viewBox', '0 0 360 360');
         
         // 1. Convert relative images inside SVG to base64
         const images = clonedSvg.querySelectorAll('image');
@@ -1521,6 +1537,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Clone main SVG structure
         const previewSvg = document.getElementById('localGridSvg').cloneNode(true);
+        previewSvg.setAttribute('viewBox', '0 0 360 360');
         previewSvg.removeAttribute('id');
         previewSvg.setAttribute('style', 'pointer-events: none;');
         previewSvg.querySelector('.grid-lines').innerHTML = '';
@@ -1620,6 +1637,113 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadAllBtn.innerHTML = originalText;
       }, 2000);
     });
+  }
+
+  // Update viewBox of SVG based on zoom and pan offsets
+  function updateSvgViewBox(svgEl) {
+    if (!svgEl) return;
+    const w = 360 / zoomLevel;
+    const h = 360 / zoomLevel;
+    const x = 180 - (180 / zoomLevel) + panX;
+    const y = 180 - (180 / zoomLevel) + panY;
+    svgEl.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+  }
+
+  // Reset zoom and pan variables and update viewBox
+  function resetZoomAndPan() {
+    zoomLevel = 1.0;
+    panX = 0;
+    panY = 0;
+    const svgEl = document.getElementById('localGridSvg');
+    updateSvgViewBox(svgEl);
+  }
+
+  // Bind zoom and pan controls and drag/swipe handlers
+  function setupZoomAndPan() {
+    const svgEl = document.getElementById('localGridSvg');
+    const wrapper = svgEl.parentElement; // .svg-wrapper
+    
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomResetBtn = document.getElementById('zoomResetBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    
+    // Zoom In
+    zoomInBtn.addEventListener('click', () => {
+      zoomLevel = Math.min(zoomLevel * 1.25, 4.0);
+      updateSvgViewBox(svgEl);
+    });
+    
+    // Zoom Out
+    zoomOutBtn.addEventListener('click', () => {
+      zoomLevel = Math.max(zoomLevel / 1.25, 0.5);
+      updateSvgViewBox(svgEl);
+    });
+    
+    // Zoom Reset
+    zoomResetBtn.addEventListener('click', () => {
+      resetZoomAndPan();
+    });
+    
+    // Drag/Pan Logic
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let startPanX = 0;
+    let startPanY = 0;
+    
+    function startDrag(e) {
+      if (zoomLevel <= 1.0) return;
+      
+      isDragging = true;
+      svgEl.classList.add('dragging');
+      
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      startX = clientX;
+      startY = clientY;
+      startPanX = panX;
+      startPanY = panY;
+    }
+    
+    function moveDrag(e) {
+      if (!isDragging) return;
+      
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      const dx = clientX - startX;
+      const dy = clientY - startY;
+      
+      const displayWidth = wrapper.clientWidth || 320;
+      const displayHeight = wrapper.clientHeight || 320;
+      
+      panX = startPanX - (dx * (360 / zoomLevel) / displayWidth);
+      panY = startPanY - (dy * (360 / zoomLevel) / displayHeight);
+      
+      updateSvgViewBox(svgEl);
+      
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    }
+    
+    function endDrag() {
+      if (isDragging) {
+        isDragging = false;
+        svgEl.classList.remove('dragging');
+      }
+    }
+    
+    // Mouse Event Listeners
+    svgEl.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', moveDrag);
+    window.addEventListener('mouseup', endDrag);
+    
+    // Touch Event Listeners (mobile)
+    svgEl.addEventListener('touchstart', startDrag, { passive: false });
+    window.addEventListener('touchmove', moveDrag, { passive: false });
+    window.addEventListener('touchend', endDrag);
   }
 
   // Final sync check
