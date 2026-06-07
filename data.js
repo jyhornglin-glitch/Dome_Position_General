@@ -144,7 +144,8 @@ const performersData = [
   { category: "A白", id: "3-53", name: "黃名揮", circle: "10.8-45.5", xingYuan: "舞台上", jingSi: "上階梯", lamp: "舞台上", bigV: "5-43.2" },
   { category: "A白", id: "3-54", name: "許銘量", circle: "10.3-46.7", xingYuan: "舞台上", jingSi: "上階梯", lamp: "舞台上", bigV: "4.5-44" },
   { category: "A白", id: "3-55", name: "陳志嶄", circle: "9.8-47.4", xingYuan: "舞台上", jingSi: "上階梯", lamp: "舞台上", bigV: "4-45" },
-  { category: "A白", id: "3-56", name: "高偉誠", circle: "9.3-48.4", xingYuan: "舞台上", jingSi: "上階梯", lamp: "舞台上", bigV: "8.5-51.5" }
+  { category: "A白", id: "3-56", name: "高偉誠", circle: "9.3-48.4", xingYuan: "舞台上", jingSi: "上階梯", lamp: "舞台上", bigV: "8.5-51.5" },
+  { category: "A白", id: "27-36", name: "呂美香", circle: "23.6-37.3", xingYuan: "12-42.2", jingSi: "27-36", lamp: "8.7-34.5", bigV: "16.7-45.1" }
 ];
 
 // Export if in node environment, otherwise make it global
