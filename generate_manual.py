@@ -33,7 +33,7 @@ def create_manual():
     pdf.add_font('STHeiti', style='', fname='/System/Library/Fonts/STHeiti Light.ttc')
     pdf.add_font('STHeiti-Bold', style='', fname='/System/Library/Fonts/STHeiti Medium.ttc')
     
-    # --- PAGE 1: TITLE & SEARCH ---
+    # --- PAGE 1: TITLE & CORE UI ---
     pdf.add_page()
     
     # Header Title Block
@@ -76,24 +76,16 @@ def create_manual():
     p1 = (
         "1. 起點搜尋與聯想清單：\n"
         "   - 在畫面上方的搜尋框中輸入您的起點座標（例如：「4-50」或「7-37」）。\n"
-        "   - 輸入數字時，下方會出現匹配的座標清單，點選即可快速載入演繹人員資料。\n\n"
+        "   - 輸入數字時，下方會出現匹配的座標清單，點選即可快速載入資料。\n"
         "2. 組別篩選器：\n"
-        "   - 搜尋框下方提供「組別篩選」選單，可過濾 A白、A藍、B白、B藍 等不同舞台區域組別，協助您精準定位。\n\n"
+        "   - 搜尋框下方提供「組別篩選」選單，可過濾 A白、A藍、B白、B藍 等舞台區域組別，協助您精準定位。\n"
         "3. 頁籤切換（手機端最佳化）：\n"
-        "   - 系統提供「網格定位」、「跑位引導」、「隊形詳情」三個按鈕頁籤，您可以隨時切換檢視。"
+        "   - 系統提供「網格定位」、「跑位引導」、「隊形詳情」三個頁籤，您可以隨時切換。"
     )
-    # Print next to vertical screenshot (width 110mm)
-    pdf.multi_cell(110, 6, p1)
-    
-    # Embed vertical screenshot of main app UI on the right
-    img1_path = os.path.join(images_dir, "media__1780728410363.png")
-    if os.path.exists(img1_path):
-        pdf.image(img1_path, x=135, y=55, w=60)
-        
-    # --- PAGE 2: GRID VIEW & CONTROLS ---
-    pdf.add_page()
-    
-    # Section 2: Grid View
+    pdf.multi_cell(110, 5.5, p1)
+    pdf.ln(4)
+
+    # Section 2: Grid View intro
     draw_heading("二、 網格定位功能 (核心定位地圖)")
     p2 = (
         "網格定位是本系統的核心功能，顯示以您的「起點座標」為中心 (0,0) 的相對座標系統：\n"
@@ -101,36 +93,42 @@ def create_manual():
         "   - 藍色圓點：代表您的「起點」（即 Home 位置）。\n"
         "   - 灰色圓點：代表演繹過程中的「上一個點位」（Prev）。\n"
         "   - 黃色星星/地標：代表「目前隊形」您應該站立的位置（Current）。\n"
-        "2. 指引線與路徑：\n"
-        "   - 黃色粗線與箭頭為目前步驟的行進動線。\n"
-        "   - 勾選「顯示完整 6 點軌跡」後，地圖上會同時以各步驟的專屬色彩顯示完整的連續移動路線。\n"
-        "3. 舞台背景浮水印：\n"
-        "   - 地圖背後繪有大巨蛋的實體舞台藍圖（包括甲乙舞台、弧形階梯與放射狀台階等），方便演繹人員對照真實地貌。"
+        "2. 指引線路徑：黃色粗線與箭頭為目前步驟的行進動線。勾選「顯示完整 6 點軌跡」後，會同時以各步驟的專屬色彩顯示完整的連續移動路線。"
     )
-    pdf.multi_cell(110, 6, p2)
+    pdf.multi_cell(110, 5.5, p2)
+    
+    # Embed vertical screenshot of main app UI on the right
+    img1_path = os.path.join(images_dir, "media__1780728410363.png")
+    if os.path.exists(img1_path):
+        pdf.image(img1_path, x=135, y=55, w=60)
+        
+    # --- PAGE 2: BUTTON EXPLANATIONS ---
+    pdf.add_page()
+    
+    # Section 3: Button Explanations
+    draw_heading("三、 系統畫面按鈕功能詳細說明")
+    p3 = (
+        "為提供流暢的操作體驗，系統畫面各項按鈕與控制項的功能說明如下：\n\n"
+        "1. 查詢與搜尋控制項：\n"
+        "   - 搜尋輸入框：位於頂部，點選並輸入起點座標以開始跑位查詢。\n"
+        "   - 清除按鈕 (X)：輸入框有文字時顯示於右側，點選可一鍵清空搜尋內容。\n"
+        "   - 組別下拉選單：點選可過濾特定的演繹組別區域。\n\n"
+        "2. 隊形步驟與頁籤切換按鈕：\n"
+        "   - 「上一個」與「下一個」按鈕：位於地圖上方，用於在 6 個演繹隊形步驟間循序切換。\n"
+        "   - 頁籤按鈕（網格定位 / 跑位引導 / 隊形詳情）：位於中間，切換手機不同的檢視視角。\n\n"
+        "3. 地圖控制按鈕（位於網格地圖正下方）：\n"
+        "   - 放大按鈕 (+) / 縮小按鈕 (-)：調整網格地圖的縮放倍率。放大後可使用滑鼠拖曳（電腦端）或手指拖移（行動裝置）來平移觀看不同區域。\n"
+        "   - 逆時針旋轉 (左旋轉鈕) / 順時針旋轉 (右旋轉鈕)：每按一次將地圖旋轉 45 度角。當您面向不同舞台方向演繹時，可旋轉地圖使網格與您的真實視覺方向一致，地標與座標標記也會隨之旋轉以利讀取。\n"
+        "   - 重設按鈕 (Reset)：位於最右側，一鍵恢復地圖的縮放倍率、平移位置與旋轉角度。\n\n"
+        "4. 資料匯出按鈕：\n"
+        "   - 「查看與下載所有圖」按鈕：位於最下方，點選可開啟定點圖預覽彈窗並批次下載高清列印用 A4 PDF 定點圖。"
+    )
+    pdf.multi_cell(110, 5.2, p3)
     
     # Embed horizontal screenshot of the grid map on the right
     img2_path = os.path.join(images_dir, "media__1780728431406.png")
     if os.path.exists(img2_path):
         pdf.image(img2_path, x=135, y=20, w=60)
-        
-    # Move cursor down below the image height to draw Section 3
-    pdf.set_y(102)
-    
-    # Section 3: Controls
-    draw_heading("三、 進階地圖控制與置中對齊")
-    p3 = (
-        "地圖下方設有五個 Tactile 圓形控制按鈕，提供極佳的互動反饋：\n"
-        "1. 放大 (+) 與 縮小 (-)：\n"
-        "   - 可放大地圖以看清細節，並支援在放大狀態下使用手指拖移（行動裝置）或滑鼠拖曳（電腦端）來移動平移視角。\n"
-        "2. 逆時針旋轉 (左旋轉鈕) 與 順時針旋轉 (右旋轉鈕)：\n"
-        "   - 支援 45 度角增量旋轉。當您面向不同方向演繹時，可旋轉地圖使網格與您的真實視覺方向一致，地標與座標標記也會隨之旋轉以利讀取。\n"
-        "3. 自動對齊功能：\n"
-        "   - 切換「下一個」或「上一個」步驟時，若地圖處於放大或旋轉狀態，視角會自動計算旋轉矩陣，將您目前活躍的黃色地標自動置中對齊。\n"
-        "4. 重設按鈕 (Reset)：\n"
-        "   - 一鍵將縮放倍率、平移位置及旋轉角度全部恢復為預設狀態。"
-    )
-    pdf.multi_cell(0, 6, p3)
 
     # --- PAGE 3: WALKTHROUGH, EXPORT, GENERAL ---
     pdf.add_page()
@@ -189,7 +187,7 @@ def create_manual():
     
     # Save the file
     pdf.output("使用手冊.pdf")
-    print("使用手冊.pdf has been generated successfully with embedded graphics!")
+    print("使用手冊.pdf has been generated successfully with button explanations!")
 
 if __name__ == "__main__":
     create_manual()
