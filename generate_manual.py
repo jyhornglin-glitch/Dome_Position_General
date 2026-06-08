@@ -2,12 +2,17 @@ import os
 from fpdf import FPDF
 
 class ManualPDF(FPDF):
+    def __init__(self, is_general=True, **kwargs):
+        super().__init__(**kwargs)
+        self.is_general = is_general
+
     def header(self):
         # Header text
         self.set_font('STHeiti', size=9)
         self.set_text_color(148, 163, 184) # light slate gray
         self.cell(0, 8, '大巨蛋演繹個人跑位定位系統 — 使用手冊', border=0, align='L')
-        self.cell(0, 8, '通用場次版', border=0, ln=1, align='R')
+        sub_title = '通用場次版' if self.is_general else '標準版'
+        self.cell(0, 8, sub_title, border=0, ln=1, align='R')
         # Draw a thin horizontal divider line
         self.set_draw_color(226, 232, 240)
         self.set_line_width(0.5)
@@ -22,11 +27,12 @@ class ManualPDF(FPDF):
         self.cell(0, 10, f'第 {self.page_no()} 頁', border=0, align='C')
 
 def create_manual():
-    pdf = ManualPDF(orientation="P", unit="mm", format="A4")
-    pdf.set_margins(15, 15, 15)
-    
     base_dir = os.path.dirname(os.path.abspath(__file__))
     images_dir = os.path.join(base_dir, "images")
+    is_general = "通用場次" in base_dir
+    
+    pdf = ManualPDF(is_general=is_general, orientation="P", unit="mm", format="A4")
+    pdf.set_margins(15, 15, 15)
     
     # Register System Fonts before adding page (so header can use them)
     # Using macOS built-in STHeiti Light for regular, Medium for bold
@@ -43,7 +49,8 @@ def create_manual():
     
     pdf.set_font('STHeiti-Bold', size=14)
     pdf.set_text_color(217, 119, 6) # amber-700
-    pdf.cell(0, 8, '行動端系統使用手冊 (通用場次版)', ln=1, align='C')
+    sub_title_main = '行動端系統使用手冊 (通用場次版)' if is_general else '行動端系統使用手冊 (標準版)'
+    pdf.cell(0, 8, sub_title_main, ln=1, align='C')
     pdf.ln(6)
     
     # Introduction block
@@ -99,7 +106,7 @@ def create_manual():
     pdf.multi_cell(110, 5.5, p2)
     
     # Embed vertical screenshot of main app UI on the right
-    img1_path = os.path.join(images_dir, "media__1780728410363.png")
+    img1_path = os.path.join(images_dir, "screenshot_p1.png")
     if os.path.exists(img1_path):
         pdf.image(img1_path, x=135, y=55, w=60)
         # Draw image caption under the vertical screenshot
@@ -133,7 +140,7 @@ def create_manual():
     pdf.multi_cell(110, 5.2, p3)
     
     # Embed horizontal screenshot of the grid map on the right
-    img2_path = os.path.join(images_dir, "media__1780728431406.png")
+    img2_path = os.path.join(images_dir, "screenshot_p2.png")
     if os.path.exists(img2_path):
         pdf.image(img2_path, x=135, y=20, w=60)
         # Draw image caption under the horizontal screenshot
@@ -160,7 +167,7 @@ def create_manual():
     pdf.multi_cell(110, 6, p4)
     
     # Embed vertical screenshot of walkthrough steps list
-    img3_path = os.path.join(images_dir, "media__1780729165893.png")
+    img3_path = os.path.join(images_dir, "screenshot_p3.png")
     if os.path.exists(img3_path):
         pdf.image(img3_path, x=135, y=20, w=60)
         # Draw image caption under the vertical screenshot
@@ -177,7 +184,7 @@ def create_manual():
     draw_heading("五、 PDF 匯出與列印")
     p5 = (
         "1. 查看與下載所有圖：\n"
-        "   - 點擊「查看與下載所有圖」按鈕，會開啟彈出視窗預覽 6 個演繹隊形的縮圖。\n"
+        "   - 點幕「查看與下載所有圖」按鈕，會開啟彈出視窗預覽 6 個演繹隊形的縮圖。\n"
         "2. 高解析度 PDF 下載：\n"
         "   - 點擊縮圖下方的「下載 PDF」或頂部的「下載全部定點圖」，系統將自動產生高解析度的 A4 PDF 定點圖。\n"
         "   - **自動重設功能**：不論您當前的地圖縮放、平移或旋轉狀態為何，匯出的 PDF zh-TW 版皆會自動重設為無縮放的全景視角，確保版面完整無遮擋，方便列印攜帶。"
@@ -185,15 +192,16 @@ def create_manual():
     pdf.multi_cell(0, 6, p5)
     pdf.ln(2)
 
-    # Section 6: General Version
-    draw_heading("六、 通用場次版特別說明")
-    p6 = (
-        "在「通用場次」版本中，為保護隱私並提供各場次通用的跑位模板，系統進行了以下調整：\n"
-        "1. 隱去真實姓名：網格地圖與介面上已完全隱去表演者的真實姓名，僅顯示起點座標及編號。\n"
-        "2. 標記字樣更新：水印標記及字樣已由「身分證」全數改為「起點座標」，視覺更簡潔易懂。"
-    )
-    pdf.multi_cell(0, 6, p6)
-    pdf.ln(6)
+    if is_general:
+        # Section 6: General Version
+        draw_heading("六、 通用場次版特別說明")
+        p6 = (
+            "在「通用場次」版本中，為保護隱私並提供各場次通用的跑位模板，系統進行了以下調整：\n"
+            "1. 隱去真實姓名：網格地圖與介面上已完全隱去表演者的真實姓名，僅顯示起點座標及編號。\n"
+            "2. 標記字樣更新：水印標記及字樣已由「身分證」全數改為「起點座標」，視覺更簡潔易懂。"
+        )
+        pdf.multi_cell(0, 6, p6)
+        pdf.ln(6)
     
     # Footer Notice Box
     pdf.set_font('STHeiti', size=9)
