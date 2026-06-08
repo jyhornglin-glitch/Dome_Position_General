@@ -3,6 +3,15 @@
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements
   const searchInput = document.getElementById('searchInput');
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      // Force reload page by appending timestamp query parameter
+      const url = new URL(window.location.href);
+      url.searchParams.set('t', Date.now().toString());
+      window.location.href = url.toString();
+    });
+  }
   const clearSearchBtn = document.getElementById('clearSearchBtn');
   const autocompleteList = document.getElementById('autocompleteList');
   const categoryFilter = document.getElementById('categoryFilter');
