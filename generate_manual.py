@@ -90,7 +90,8 @@ def create_manual():
         "3. 頁籤切換（手機端最佳化）：\n"
         "   - 系統提供「網格定位」、「跑位引導」、「隊形詳情」三個頁籤，您可以隨時切換。"
     )
-    pdf.multi_cell(110, 5.5, p1)
+    pdf.set_x(20)
+    pdf.multi_cell(105, 5.5, p1)
     pdf.ln(4)
 
     # Section 2: Grid View intro
@@ -103,7 +104,8 @@ def create_manual():
         "   - 黃色星星/地標：代表「目前隊形」您應該站立的位置（Current）。\n"
         "2. 指引線路徑：黃色粗線與箭頭為目前步驟的行進動線。勾選「顯示完整 6 點軌跡」後，會同時以各步驟的專屬色彩顯示完整的連續移動路線。"
     )
-    pdf.multi_cell(110, 5.5, p2)
+    pdf.set_x(20)
+    pdf.multi_cell(105, 5.5, p2)
     
     # Embed vertical screenshot of main app UI on the right
     img1_path = os.path.join(images_dir, "screenshot_p1.png")
@@ -137,7 +139,8 @@ def create_manual():
         "4. 資料匯出按鈕：\n"
         "   - 「查看與下載所有圖」按鈕：位於最下方，點選可開啟定點圖預覽彈窗並批次下載高清列印用 A4 PDF 定點圖。"
     )
-    pdf.multi_cell(110, 5.2, p3)
+    pdf.set_x(20)
+    pdf.multi_cell(105, 5.2, p3)
     
     # Embed horizontal screenshot of the grid map on the right
     img2_path = os.path.join(images_dir, "screenshot_p2.png")
@@ -164,7 +167,8 @@ def create_manual():
         "   - 在「隊形詳情」頁籤中，列出了 6 大隊形點位的專屬圖卡。\n"
         "   - 詳細顯示座標、相對起點的總偏移植，以及從上一步驟移動而來的相對向量。"
     )
-    pdf.multi_cell(110, 6, p4)
+    pdf.set_x(20)
+    pdf.multi_cell(105, 6, p4)
     
     # Embed vertical screenshot of walkthrough steps list
     img3_path = os.path.join(images_dir, "screenshot_p3.png")
@@ -189,8 +193,13 @@ def create_manual():
         "   - 點擊縮圖下方的「下載 PDF」或頂部的「下載全部定點圖」，系統將自動產生高解析度的 A4 PDF 定點圖。\n"
         "   - **自動重設功能**：不論您當前的地圖縮放、平移或旋轉狀態為何，匯出的 PDF zh-TW 版皆會自動重設為無縮放的全景視角，確保版面完整無遮擋，方便列印攜帶。"
     )
-    pdf.multi_cell(0, 6, p5)
+    pdf.set_x(20)
+    pdf.multi_cell(105, 6, p5)
     pdf.ln(2)
+
+    # Ensure any subsequent section (like Section 6 or footer notice) is safely below the vertical screenshot (y=150)
+    safe_y = max(pdf.get_y(), 152)
+    pdf.set_y(safe_y)
 
     if is_general:
         # Section 6: General Version
@@ -200,16 +209,19 @@ def create_manual():
             "1. 隱去真實姓名：網格地圖與介面上已完全隱去表演者的真實姓名，僅顯示起點座標及編號。\n"
             "2. 標記字樣更新：水印標記及字樣已由「身分證」全數改為「起點座標」，視覺更簡潔易懂。"
         )
-        pdf.multi_cell(0, 6, p6)
-        pdf.ln(6)
+        pdf.set_x(20)
+        pdf.multi_cell(105, 6, p6)
+        pdf.ln(4)
     
     # Footer Notice Box
+    pdf.set_y(pdf.get_y() + 2)
     pdf.set_font('STHeiti', size=9)
     pdf.set_text_color(100, 116, 139) # slate-500
     pdf.set_fill_color(248, 250, 252) # slate-50
     pdf.set_draw_color(226, 232, 240)
-    pdf.rect(15, pdf.get_y(), 180, 13, 'DF')
-    pdf.set_y(pdf.get_y() + 1.5)
+    rect_y = pdf.get_y()
+    pdf.rect(15, rect_y, 180, 13, 'DF')
+    pdf.set_y(rect_y + 1.5)
     pdf.cell(5) # spacer
     pdf.multi_cell(170, 5, "◆ 溫馨提示：本系統建議使用行動裝置以直式瀏覽以獲得最佳操作體驗。若有任何操作疑問，請洽演繹種子團隊窗口。", align="C")
     
