@@ -393,13 +393,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const prevCoord = parseCoordinate(prevCoordStr);
         vectorPrev.textContent = getVectorDescription(prevCoord, currentCoord);
       }
-      card.onclick = () => {
-        const idx = formations.findIndex(x => x.key === f.key);
-        activeFormationIdx = idx;
-        updateFormationControls();
-        drawLocalGridPath();
-        syncActiveCardAndStep();
-      };
+      // Disabled card click interaction as per request
+      card.onclick = null;
     });
   }
 
@@ -1136,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     unhighlightAllCards();
     const card = document.getElementById(`card-${activeKey}`);
     if (card) {
-      card.classList.add('highlighted');
+      // Scroll into view but do not highlight/change color as per request
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
@@ -1157,8 +1152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     unhighlightAllCards();
     const card = document.getElementById(`card-${key}`);
     if (card) {
-      card.classList.add('highlighted');
-      // Scroll card container into view inside screen
+      // Scroll card container into view but do not highlight as per request
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
@@ -1172,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function highlightFormation(key) {
     unhighlightAllCards();
     const card = document.getElementById(`card-${key}`);
-    if (card) card.classList.add('highlighted');
+    // Disabled card highlighted class toggle as per request
     
     const allPts = document.querySelectorAll('.path-point');
     allPts.forEach(pt => pt.classList.remove('active-formation'));
