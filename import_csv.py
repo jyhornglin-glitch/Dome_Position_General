@@ -1,8 +1,10 @@
 import csv
 import os
 
-csv_path = "/Users/franklin/Documents/大巨蛋演繹跑位查詢/performers.csv"
-js_path = "/Users/franklin/Documents/大巨蛋演繹跑位查詢/data.js"
+# Use script's directory as base path to ensure it works when run from any folder
+base_dir = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(base_dir, "performers.csv")
+js_path = os.path.join(base_dir, "data.js")
 
 if not os.path.exists(csv_path):
     print("請先在專案目錄下建立 'performers.csv' 檔案！")
@@ -29,8 +31,8 @@ else:
                 "lamp": row.get("lamp", "").strip(),
                 "bigV": row.get("bigV", "").strip()
             }
-            # Add only if id and name are present
-            if p["id"] and p["name"]:
+            # Add only if id is present (name is optional as it can be empty)
+            if p["id"]:
                 performers.append(p)
                 
     # Generate data.js format content
