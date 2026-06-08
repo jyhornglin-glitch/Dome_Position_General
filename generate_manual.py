@@ -25,14 +25,18 @@ def create_manual():
     pdf = ManualPDF(orientation="P", unit="mm", format="A4")
     pdf.set_margins(15, 15, 15)
     
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    images_dir = os.path.join(base_dir, "images")
+    
     # Register System Fonts before adding page (so header can use them)
     # Using macOS built-in STHeiti Light for regular, Medium for bold
     pdf.add_font('STHeiti', style='', fname='/System/Library/Fonts/STHeiti Light.ttc')
     pdf.add_font('STHeiti-Bold', style='', fname='/System/Library/Fonts/STHeiti Medium.ttc')
     
+    # --- PAGE 1: TITLE & SEARCH ---
     pdf.add_page()
     
-    # 1. Header Title Block
+    # Header Title Block
     pdf.set_font('STHeiti-Bold', size=22)
     pdf.set_text_color(15, 23, 42) # slate-900
     pdf.cell(0, 12, '大巨蛋演繹個人跑位定位系統', ln=1, align='C')
@@ -40,7 +44,7 @@ def create_manual():
     pdf.set_font('STHeiti-Bold', size=14)
     pdf.set_text_color(217, 119, 6) # amber-700
     pdf.cell(0, 8, '行動端系統使用手冊 (通用場次版)', ln=1, align='C')
-    pdf.ln(8)
+    pdf.ln(6)
     
     # Introduction block
     pdf.set_font('STHeiti', size=10)
@@ -67,22 +71,30 @@ def create_manual():
         pdf.set_font('STHeiti', size=10)
         pdf.set_text_color(71, 85, 105)
         
-    # Section 1
+    # Section 1: Search & Filter
     draw_heading("一、 主介面與查詢功能")
     p1 = (
         "1. 起點搜尋與聯想清單：\n"
         "   - 在畫面上方的搜尋框中輸入您的起點座標（例如：「4-50」或「7-37」）。\n"
-        "   - 輸入數字時，下方會出現匹配的座標清單，點選即可快速載入演繹人員資料。\n"
+        "   - 輸入數字時，下方會出現匹配的座標清單，點選即可快速載入演繹人員資料。\n\n"
         "2. 組別篩選器：\n"
-        "   - 搜尋框下方提供「組別篩選」選單，可過濾 A白、A藍、B白、B藍 等不同舞台區域組別，協助您精準定位。\n"
+        "   - 搜尋框下方提供「組別篩選」選單，可過濾 A白、A藍、B白、B藍 等不同舞台區域組別，協助您精準定位。\n\n"
         "3. 頁籤切換（手機端最佳化）：\n"
         "   - 系統提供「網格定位」、「跑位引導」、「隊形詳情」三個按鈕頁籤，您可以隨時切換檢視。"
     )
-    pdf.multi_cell(0, 6, p1)
-    pdf.ln(6)
-
-    # Section 2
-    draw_heading("二、 網格定位功能（核心檢視）")
+    # Print next to vertical screenshot (width 110mm)
+    pdf.multi_cell(110, 6, p1)
+    
+    # Embed vertical screenshot of main app UI on the right
+    img1_path = os.path.join(images_dir, "media__1780728410363.png")
+    if os.path.exists(img1_path):
+        pdf.image(img1_path, x=135, y=55, w=60)
+        
+    # --- PAGE 2: GRID VIEW & CONTROLS ---
+    pdf.add_page()
+    
+    # Section 2: Grid View
+    draw_heading("二、 網格定位功能 (核心定位地圖)")
     p2 = (
         "網格定位是本系統的核心功能，顯示以您的「起點座標」為中心 (0,0) 的相對座標系統：\n"
         "1. 點位標記說明：\n"
@@ -95,10 +107,17 @@ def create_manual():
         "3. 舞台背景浮水印：\n"
         "   - 地圖背後繪有大巨蛋的實體舞台藍圖（包括甲乙舞台、弧形階梯與放射狀台階等），方便演繹人員對照真實地貌。"
     )
-    pdf.multi_cell(0, 6, p2)
-    pdf.ln(6)
-
-    # Section 3
+    pdf.multi_cell(110, 6, p2)
+    
+    # Embed horizontal screenshot of the grid map on the right
+    img2_path = os.path.join(images_dir, "media__1780728431406.png")
+    if os.path.exists(img2_path):
+        pdf.image(img2_path, x=135, y=20, w=60)
+        
+    # Move cursor down below the image height to draw Section 3
+    pdf.set_y(102)
+    
+    # Section 3: Controls
     draw_heading("三、 進階地圖控制與置中對齊")
     p3 = (
         "地圖下方設有五個 Tactile 圓形控制按鈕，提供極佳的互動反饋：\n"
@@ -112,25 +131,31 @@ def create_manual():
         "   - 一鍵將縮放倍率、平移位置及旋轉角度全部恢復為預設狀態。"
     )
     pdf.multi_cell(0, 6, p3)
-    pdf.ln(6)
 
-    # Add a page break for the rest
+    # --- PAGE 3: WALKTHROUGH, EXPORT, GENERAL ---
     pdf.add_page()
     
-    # Section 4
+    # Section 4: Walkthrough & Details
     draw_heading("四、 跑位引導與隊形詳情")
     p4 = (
         "1. 跑位引導步驟：\n"
         "   - 在「跑位引導」頁籤中，系統以步驟清單詳細列出 6 個演繹步驟的行進指引。\n"
-        "   - 每一步驟包含：目標絕對座標、行進方向提示（如：向右後 3.5 步）、直線距離步數，以及對應的歌詞OS段落。\n"
+        "   - 每一步驟包含：目標絕對座標、行進方向提示（如：向右後 3.5 步）、直線距離步數，以及對應的歌詞OS段落。\n\n"
         "2. 隊形詳情圖卡：\n"
         "   - 在「隊形詳情」頁籤中，列出了 6 大隊形點位的專屬圖卡。\n"
         "   - 詳細顯示座標、相對起點的總偏移植，以及從上一步驟移動而來的相對向量。"
     )
-    pdf.multi_cell(0, 6, p4)
-    pdf.ln(6)
+    pdf.multi_cell(110, 6, p4)
+    
+    # Embed vertical screenshot of walkthrough steps list
+    img3_path = os.path.join(images_dir, "media__1780729165893.png")
+    if os.path.exists(img3_path):
+        pdf.image(img3_path, x=135, y=20, w=60)
+        
+    # Move cursor down below the image height to draw Section 5 & 6
+    pdf.set_y(95)
 
-    # Section 5
+    # Section 5: Export
     draw_heading("五、 PDF 匯出與列印")
     p5 = (
         "1. 查看與下載所有圖：\n"
@@ -140,9 +165,9 @@ def create_manual():
         "   - **自動重設功能**：不論您當前的地圖縮放、平移或旋轉狀態為何，匯出的 PDF zh-TW 版皆會自動重設為無縮放的全景視角，確保版面完整無遮擋，方便列印攜帶。"
     )
     pdf.multi_cell(0, 6, p5)
-    pdf.ln(6)
+    pdf.ln(2)
 
-    # Section 6
+    # Section 6: General Version
     draw_heading("六、 通用場次版特別說明")
     p6 = (
         "在「通用場次」版本中，為保護隱私並提供各場次通用的跑位模板，系統進行了以下調整：\n"
@@ -150,21 +175,21 @@ def create_manual():
         "2. 標記字樣更新：水印標記及字樣已由「身分證」全數改為「起點座標」，視覺更簡潔易懂。"
     )
     pdf.multi_cell(0, 6, p6)
-    pdf.ln(8)
+    pdf.ln(6)
     
-    # Footer Notice
+    # Footer Notice Box
     pdf.set_font('STHeiti', size=9)
     pdf.set_text_color(100, 116, 139) # slate-500
     pdf.set_fill_color(248, 250, 252) # slate-50
     pdf.set_draw_color(226, 232, 240)
-    pdf.rect(15, pdf.get_y(), 180, 15, 'DF')
-    pdf.set_y(pdf.get_y() + 2)
+    pdf.rect(15, pdf.get_y(), 180, 13, 'DF')
+    pdf.set_y(pdf.get_y() + 1.5)
     pdf.cell(5) # spacer
     pdf.multi_cell(170, 5, "◆ 溫馨提示：本系統建議使用行動裝置以直式瀏覽以獲得最佳操作體驗。若有任何操作疑問，請洽演繹種子團隊窗口。", align="C")
     
     # Save the file
     pdf.output("使用手冊.pdf")
-    print("使用手冊.pdf has been generated successfully!")
+    print("使用手冊.pdf has been generated successfully with embedded graphics!")
 
 if __name__ == "__main__":
     create_manual()
