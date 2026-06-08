@@ -74,11 +74,12 @@ def create_manual():
     # Section 1: Search & Filter
     draw_heading("一、 主介面與查詢功能")
     p1 = (
+        "請參考右側【圖一：系統主查詢介面】進行操作：\n"
         "1. 起點搜尋與聯想清單：\n"
         "   - 在畫面上方的搜尋框中輸入您的起點座標（例如：「4-50」或「7-37」）。\n"
         "   - 輸入數字時，下方會出現匹配的座標清單，點選即可快速載入資料。\n"
         "2. 組別篩選器：\n"
-        "   - 搜尋框下方提供「組別篩選」選單，可過濾 A白、A藍、B白、B藍 等舞台區域組別，協助您精準定位。\n"
+        "   - 搜尋框下方提供「組別篩選」選單，可過濾 A白、A藍、B白、B藍 等不同舞台區域組別，協助您精準定位。\n"
         "3. 頁籤切換（手機端最佳化）：\n"
         "   - 系統提供「網格定位」、「跑位引導」、「隊形詳情」三個頁籤，您可以隨時切換。"
     )
@@ -101,6 +102,12 @@ def create_manual():
     img1_path = os.path.join(images_dir, "media__1780728410363.png")
     if os.path.exists(img1_path):
         pdf.image(img1_path, x=135, y=55, w=60)
+        # Draw image caption under the vertical screenshot
+        pdf.set_y(144)
+        pdf.set_x(135)
+        pdf.set_font('STHeiti-Bold', size=8)
+        pdf.set_text_color(15, 23, 42)
+        pdf.cell(60, 5, '【圖一：系統主查詢介面】', border=0, align='C')
         
     # --- PAGE 2: BUTTON EXPLANATIONS ---
     pdf.add_page()
@@ -108,14 +115,14 @@ def create_manual():
     # Section 3: Button Explanations
     draw_heading("三、 系統畫面按鈕功能詳細說明")
     p3 = (
-        "為提供流暢的操作體驗，系統畫面各項按鈕與控制項的功能說明如下：\n\n"
+        "對照右側【圖二：個人相對網格定位與控制】標示，系統按鈕功能說明如下：\n\n"
         "1. 查詢與搜尋控制項：\n"
         "   - 搜尋輸入框：位於頂部，點選並輸入起點座標以開始跑位查詢。\n"
         "   - 清除按鈕 (X)：輸入框有文字時顯示於右側，點選可一鍵清空搜尋內容。\n"
         "   - 組別下拉選單：點選可過濾特定的演繹組別區域。\n\n"
         "2. 隊形步驟與頁籤切換按鈕：\n"
-        "   - 「上一個」與「下一個」按鈕：位於地圖上方，用於在 6 個演繹隊形步驟間循序切換。\n"
-        "   - 頁籤按鈕（網格定位 / 跑位引導 / 隊形詳情）：位於中間，切換手機不同的檢視視角。\n\n"
+        "   - 「上一個」與「下一個」按鈕：位於地圖上方，用於在 6 個演繹隊形步驟間切換。\n"
+        "   - 頁籤按鈕（網格定位 / 跑位引導 / 隊形詳情）：位於中間，切換不同檢視視角。\n\n"
         "3. 地圖控制按鈕（位於網格地圖正下方）：\n"
         "   - 放大按鈕 (+) / 縮小按鈕 (-)：調整網格地圖的縮放倍率。放大後可使用滑鼠拖曳（電腦端）或手指拖移（行動裝置）來平移觀看不同區域。\n"
         "   - 逆時針旋轉 (左旋轉鈕) / 順時針旋轉 (右旋轉鈕)：每按一次將地圖旋轉 45 度角。當您面向不同舞台方向演繹時，可旋轉地圖使網格與您的真實視覺方向一致，地標與座標標記也會隨之旋轉以利讀取。\n"
@@ -129,6 +136,12 @@ def create_manual():
     img2_path = os.path.join(images_dir, "media__1780728431406.png")
     if os.path.exists(img2_path):
         pdf.image(img2_path, x=135, y=20, w=60)
+        # Draw image caption under the horizontal screenshot
+        pdf.set_y(70)
+        pdf.set_x(135)
+        pdf.set_font('STHeiti-Bold', size=8)
+        pdf.set_text_color(15, 23, 42)
+        pdf.cell(60, 5, '【圖二：相對網格定位圖】', border=0, align='C')
 
     # --- PAGE 3: WALKTHROUGH, EXPORT, GENERAL ---
     pdf.add_page()
@@ -136,6 +149,7 @@ def create_manual():
     # Section 4: Walkthrough & Details
     draw_heading("四、 跑位引導與隊形詳情")
     p4 = (
+        "請參考右側【圖三：手機版跑位引導步驟】清單：\n"
         "1. 跑位引導步驟：\n"
         "   - 在「跑位引導」頁籤中，系統以步驟清單詳細列出 6 個演繹步驟的行進指引。\n"
         "   - 每一步驟包含：目標絕對座標、行進方向提示（如：向右後 3.5 步）、直線距離步數，以及對應的歌詞OS段落。\n\n"
@@ -149,9 +163,15 @@ def create_manual():
     img3_path = os.path.join(images_dir, "media__1780729165893.png")
     if os.path.exists(img3_path):
         pdf.image(img3_path, x=135, y=20, w=60)
+        # Draw image caption under the vertical screenshot
+        pdf.set_y(93)
+        pdf.set_x(135)
+        pdf.set_font('STHeiti-Bold', size=8)
+        pdf.set_text_color(15, 23, 42)
+        pdf.cell(60, 5, '【圖三：手機版跑位引導步驟】', border=0, align='C')
         
     # Move cursor down below the image height to draw Section 5 & 6
-    pdf.set_y(95)
+    pdf.set_y(98)
 
     # Section 5: Export
     draw_heading("五、 PDF 匯出與列印")
