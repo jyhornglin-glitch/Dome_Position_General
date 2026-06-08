@@ -53,7 +53,7 @@
             <div class="search-inputs">
               <div class="input-group search-box">
                 <i class="fa-solid fa-magnifying-glass input-icon"></i>
-                <input type="text" id="searchInput" placeholder="請輸入身分證位置 (如: 4-46)" autocomplete="off">
+                <input type="text" id="searchInput" placeholder="請輸入起點座標 (如: 4-46)" autocomplete="off">
                 <button id="clearSearchBtn" class="clear-btn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
                 <!-- Autocomplete Dropdown -->
                 <div id="autocompleteList" class="autocomplete-dropdown" style="display: none;"></div>
@@ -100,7 +100,7 @@
             <section class="visual-column mobile-tab-panel active" id="panel-localGrid">
               <div class="map-card card">
                 <div class="card-title-bar">
-                  <h3><i class="fa-solid fa-compress"></i> 個人相對網格 (身分證為中心)</h3>
+                  <h3><i class="fa-solid fa-compress"></i> 個人相對網格 (起點為中心)</h3>
                 </div>
                 
                 <!-- Step-by-Step Formation Toggle Controls -->
@@ -108,14 +108,14 @@
                   <button id="prevBtn" class="control-btn"><i class="fa-solid fa-chevron-left"></i> 上一個</button>
                   <div class="active-formation-display">
                     <span class="active-formation-num" id="activeFormNum">01</span>
-                    <span class="active-formation-title" id="activeFormTitle">身分證 (基本隊形)</span>
+                    <span class="active-formation-title" id="activeFormTitle">起點 (基本隊形)</span>
                   </div>
                   <button id="nextBtn" class="control-btn">下一個 <i class="fa-solid fa-chevron-right"></i></button>
                 </div>
 
                 <div class="map-display-area">
                   <div class="stage-legend">
-                    <span><span class="dot-legend center-home"></span>身分證(起點)</span>
+                    <span><span class="dot-legend center-home"></span>起點</span>
                     <span><span class="dot-legend prev-pos"></span>上一個點</span>
                     <span><span class="dot-legend current-pos"></span>目前點</span>
                   </div>
@@ -243,7 +243,7 @@
                   <div class="card-header">
                     <div class="formation-num">01</div>
                     <div class="formation-title">
-                      <h4>身分證 (基本隊形)</h4>
+                      <h4>起點 (基本隊形)</h4>
                       <p>Basic Position</p>
                     </div>
                     <div class="coord-badge" id="coord-basic">---</div>
@@ -280,11 +280,11 @@
                     </div>
                     <div class="vector-details">
                       <div class="vector-item home">
-                        <span class="label">相對身分證：</span>
+                        <span class="label">相對起點：</span>
                         <span class="val" id="vector-circle-home">---</span>
                       </div>
                       <div class="vector-item prev">
-                        <span class="label">從身分證：</span>
+                        <span class="label">從起點：</span>
                         <span class="val" id="vector-circle-prev">---</span>
                       </div>
                     </div>
@@ -309,7 +309,7 @@
                     </div>
                     <div class="vector-details">
                       <div class="vector-item home">
-                        <span class="label">相對身分證：</span>
+                        <span class="label">相對起點：</span>
                         <span class="val" id="vector-xingYuan-home">---</span>
                       </div>
                       <div class="vector-item prev">
@@ -338,7 +338,7 @@
                     </div>
                     <div class="vector-details">
                       <div class="vector-item home">
-                        <span class="label">相對身分證：</span>
+                        <span class="label">相對起點：</span>
                         <span class="val" id="vector-jingSi-home">---</span>
                       </div>
                       <div class="vector-item prev">
@@ -367,7 +367,7 @@
                     </div>
                     <div class="vector-details">
                       <div class="vector-item home">
-                        <span class="label">相對身分證：</span>
+                        <span class="label">相對起點：</span>
                         <span class="val" id="vector-lamp-home">---</span>
                       </div>
                       <div class="vector-item prev">
@@ -396,7 +396,7 @@
                     </div>
                     <div class="vector-details">
                       <div class="vector-item home">
-                        <span class="label">相對身分證：</span>
+                        <span class="label">相對起點：</span>
                         <span class="val" id="vector-bigV-home">---</span>
                       </div>
                       <div class="vector-item prev">
@@ -415,8 +415,8 @@
             <div class="empty-icon-wrapper">
               <i class="fa-solid fa-street-view empty-icon"></i>
             </div>
-            <h2>請輸入身分證位置開始查詢</h2>
-            <p>請在上方搜尋框中輸入您的身分證座標位置（例如：「4-46」），即可查詢您在 6 大隊形中的相對跑位網格與地標位置。</p>
+            <h2>請輸入起點座標開始查詢</h2>
+            <p>請在上方搜尋框中輸入您的起點座標位置（例如：「4-46」），即可查詢您在 6 大隊形中的相對跑位網格與地標位置。</p>
           </div>
 
 

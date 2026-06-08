@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 6 Formations metadata
   const formations = [
-    { key: 'basic', name: '身分證 (基本隊形)', label: '基本' },
+    { key: 'basic', name: '起點 (基本隊形)', label: '基本' },
     { key: 'circle', name: '圓型', label: '圓型' },
     { key: 'xingYuan', name: '行願', label: '行願' },
     { key: 'jingSi', name: '靜思家風', label: '靜思' },
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
     perfName.textContent = fields.name;
     perfCategory.textContent = performer.category;
     perfCategory.className = `meta-badge cat-${performer.category}`;
-    perfID.textContent = `身分證: ${fields.coordinate}`;
+    perfID.textContent = `起點座標: ${fields.coordinate}`;
     
     // Show main view
     emptyState.style.display = 'none';
@@ -780,14 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     
-    // Add center coordinate label "身分證"
-    const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    centerText.setAttribute('x', GRID_CENTER_X - 25);
-    centerText.setAttribute('y', GRID_CENTER_Y - 10);
-    centerText.setAttribute('fill', 'var(--red-color)');
-    centerText.setAttribute('font-weight', 'bold');
-    centerText.textContent = `身分證 (${fields.coordinate})`;
-    linesGroup.appendChild(centerText);
+    // Center coordinate label removed by request
     
     // Calculate relative coordinates and map to SVG coords
     const allPoints = formations.map((f, idx) => {
@@ -831,7 +824,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let roleLabel = pt.label;
       if (idx === 0) {
         role = 'basic';
-        roleLabel = '身分證(起點)';
+        roleLabel = '起點';
       }
       if (idx === fIdx) {
         role = 'current';
@@ -954,7 +947,7 @@ document.addEventListener('DOMContentLoaded', () => {
         coordBarPoints.push({
           ...allPoints[0],
           role: 'basic',
-          roleLabel: '身分證(起點)'
+          roleLabel: '起點'
         });
         
         if (activeFormationIdx > 0) {
@@ -966,7 +959,7 @@ document.addEventListener('DOMContentLoaded', () => {
               roleLabel: `上一個: ${allPoints[prevIdx].label}`
             });
           } else {
-            coordBarPoints[0].roleLabel = '身分證 (上一個位置)';
+            coordBarPoints[0].roleLabel = '起點 (上一個位置)';
             coordBarPoints[0].isAlsoPrev = true;
           }
           
@@ -976,7 +969,7 @@ document.addEventListener('DOMContentLoaded', () => {
             roleLabel: `目前: ${allPoints[activeFormationIdx].label}`
           });
         } else {
-          coordBarPoints[0].roleLabel = '目前位置 (身分證)';
+          coordBarPoints[0].roleLabel = '目前位置 (起點)';
           coordBarPoints[0].role = 'current';
         }
         
@@ -1015,7 +1008,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (f.key === 'bigV') coordStr = currentPerformer.bigV;
 
         if (activeFormationIdx === 0) {
-          mapMovementGuide.innerHTML = `<i class="fa-solid fa-street-view" style="color: var(--red-color); margin-right: 5px;"></i><strong>起點就位</strong>：至身分證座標點 <strong>(${coordStr})</strong> 就定位。`;
+          mapMovementGuide.innerHTML = `<i class="fa-solid fa-street-view" style="color: var(--red-color); margin-right: 5px;"></i><strong>起點就位</strong>：至起點座標點 <strong>(${coordStr})</strong> 就定位。`;
         } else {
           const prevKey = formations[activeFormationIdx - 1].key;
           let prevCoordStr = '';
@@ -1231,7 +1224,7 @@ document.addEventListener('DOMContentLoaded', () => {
       descr.className = 'nav-step-descr';
       
       if (f.key === 'basic') {
-        descr.innerHTML = `<strong>起點就位</strong>：至身分證座標點 <strong>(${coordStr})</strong> 就定位。`;
+        descr.innerHTML = `<strong>起點就位</strong>：至起點座標點 <strong>(${coordStr})</strong> 就定位。`;
       } else {
         const prevKey = formations[idx - 1].key;
         let prevCoordStr = '';
