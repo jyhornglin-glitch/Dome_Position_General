@@ -112,11 +112,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateClock, 60000);
   }
 
-  // Parse coord strings: e.g. "5.2-46.2" or "舞台上"
+  // Parse coord strings: e.g. "5.2-46.2", "平台中-8-58.5", "二階-52.2", or "舞台上"
   function parseCoordinate(coordStr) {
     if (!coordStr) return { x: null, y: null, isText: true, text: '無資料' };
     
-    const match = coordStr.trim().match(/^(-?[0-9.]+)-([0-9.]+)$/);
+    // Clean string by removing parentheses
+    const cleanStr = coordStr.replace(/[()]/g, '').trim();
+    
+    // Flexible regex to match (-?[0-9.]+)-(-?[0-9.]+) anywhere in the string,
+    // optionally ignoring text separator characters in the middle
+    const match = cleanStr.match(/(-?[0-9.]+)[^0-9.-]*-(-?[0-9.]+)/);
     if (match) {
       return {
         x: parseFloat(match[1]),
