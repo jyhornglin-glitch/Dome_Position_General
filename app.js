@@ -988,7 +988,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const valSpan = document.createElement('span');
           valSpan.className = 'val';
           if (!pt.coord.isText) {
-            valSpan.textContent = `${pt.coord.text} (-${pt.coord.x.toFixed(1).replace('.0', '')}, ${pt.coord.y.toFixed(1).replace('.0', '')})`;
+            valSpan.textContent = `${pt.coord.text} (${pt.coord.x.toFixed(1).replace('.0', '')}, ${pt.coord.y.toFixed(1).replace('.0', '')})`;
           } else {
             valSpan.textContent = pt.coord.text;
           }
