@@ -556,10 +556,10 @@ document.addEventListener('DOMContentLoaded', () => {
       maxOffset = Math.max(maxOffset, Math.abs(pt.dx_rel), Math.abs(pt.dy_rel));
     });
     
-    // Always include Stage B center (-8, 37) in the visible map area
+    // Always include Stage B center (-8, 37.5) in the visible map area
     if (!homeCoord.isText) {
       const stageB_dx_rel = -8 - homeCoord.x;
-      const stageB_dy_rel = 37 - homeCoord.y;
+      const stageB_dy_rel = 37.5 - homeCoord.y;
       maxOffset = Math.max(maxOffset, Math.abs(stageB_dx_rel), Math.abs(stageB_dy_rel));
     }
     
@@ -618,23 +618,23 @@ document.addEventListener('DOMContentLoaded', () => {
       bgRect.setAttribute('class', 'watermark-bg');
       wmkGroup.appendChild(bgRect);
       
-      // Stage B Circular Background: Col = -8, Row = 37, Radius = 10.5
+      // Stage B Circular Background: Col = -8, Row = 37.5, Radius = 8.7 (outermost step)
       const stageB_dx_rel = -8 - homeCoord.x;
-      const stageB_dy_rel = 37 - homeCoord.y;
+      const stageB_dy_rel = 37.5 - homeCoord.y;
       const stageB_svg = gridToSvg(stageB_dx_rel, stageB_dy_rel);
       
       const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       bgCircle.setAttribute('cx', stageB_svg.x);
       bgCircle.setAttribute('cy', stageB_svg.y);
-      bgCircle.setAttribute('r', 10.5 * GRID_SPACING);
+      bgCircle.setAttribute('r', 8.7 * GRID_SPACING);
       bgCircle.setAttribute('class', 'watermark-bg');
       wmkGroup.appendChild(bgCircle);
 
-      // 1. Draw Runway Central Rectangle: Col = -10 to -6, Row = 32 to 42
-      const rect_x1_rel = -10 - homeCoord.x;
-      const rect_y1_rel = 32 - homeCoord.y;
+      // 1. Draw Runway Central Rectangle: Col = -11 to -5, Row = 32.5 to 42.5
+      const rect_x1_rel = -11 - homeCoord.x;
+      const rect_y1_rel = 32.5 - homeCoord.y;
       const rect_svgTopLeft = gridToSvg(rect_x1_rel, rect_y1_rel);
-      const rect_width = 4 * GRID_SPACING;
+      const rect_width = 6 * GRID_SPACING;
       const rect_height = 10 * GRID_SPACING;
       
       const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -645,62 +645,76 @@ document.addEventListener('DOMContentLoaded', () => {
       rect.setAttribute('class', 'watermark-rect');
       wmkGroup.appendChild(rect);
       
-      // 2. Draw 13 bulging concentric lines representing stage B circles and runway steps
-      for (let i = 0; i <= 12; i++) {
-        const R_i = 4.5 + i * 0.5;
-        const W_i = 2.0 + i * (2.0 / 12.0);
-        
-        const col_top = -8 + W_i - homeCoord.x;
-        const col_mid = -8 + R_i - homeCoord.x;
-        const col_bottom = -8 + W_i - homeCoord.x;
-        
-        const row_top_start = -MAX_GRID_COORD;
-        const row_top_curve = 37 - 12 - homeCoord.y;
-        const row_mid = 37 - homeCoord.y;
-        const row_bottom_curve = 37 + 12 - homeCoord.y;
-        const row_bottom_end = MAX_GRID_COORD;
-        
-        const x_top = GRID_CENTER_X + col_top * GRID_SPACING;
-        const x_mid = GRID_CENTER_X + col_mid * GRID_SPACING;
-        const x_bottom = GRID_CENTER_X + col_bottom * GRID_SPACING;
-        
-        const y_top_start = GRID_CENTER_Y + row_top_start * GRID_SPACING;
-        const y_top_curve = GRID_CENTER_Y + row_top_curve * GRID_SPACING;
-        const y_mid = GRID_CENTER_Y + row_mid * GRID_SPACING;
-        const y_bottom_curve = GRID_CENTER_Y + row_bottom_curve * GRID_SPACING;
-        const y_bottom_end = GRID_CENTER_Y + row_bottom_end * GRID_SPACING;
-        
-        const y_control_top = GRID_CENTER_Y + (37 - 6 - homeCoord.y) * GRID_SPACING;
-        const y_control_bottom = GRID_CENTER_Y + (37 + 6 - homeCoord.y) * GRID_SPACING;
-        
-        const pathD = `M ${x_top} ${y_top_start} ` +
-                      `L ${x_top} ${y_top_curve} ` +
-                      `C ${x_top} ${y_control_top}, ${x_mid} ${y_control_top}, ${x_mid} ${y_mid} ` +
-                      `C ${x_mid} ${y_control_bottom}, ${x_bottom} ${y_control_bottom}, ${x_bottom} ${y_bottom_curve} ` +
-                      `L ${x_bottom} ${y_bottom_end}`;
-                      
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', pathD);
-        path.setAttribute('fill', 'none');
-        
-        if (i % 2 === 1) {
-          path.setAttribute('class', 'watermark-line-yellow');
-        } else {
-          if (i === 12) {
+      // 1.5 Draw central square in circle (size 6.0)
+      const squareSize = 6.0 * GRID_SPACING;
+      const squareRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      squareRect.setAttribute('x', stageB_svg.x - squareSize / 2);
+      squareRect.setAttribute('y', stageB_svg.y - squareSize / 2);
+      squareRect.setAttribute('width', squareSize);
+      squareRect.setAttribute('height', squareSize);
+      squareRect.setAttribute('class', 'watermark-rect');
+      wmkGroup.appendChild(squareRect);
+      
+      // 2. Draw bulging concentric lines representing stage B circles and runway steps on BOTH sides
+      const sides = [1, -1];
+      sides.forEach(side => {
+        for (let i = 0; i <= 6; i++) {
+          const R_i = 6.0 + i * 0.45;
+          const W_i = 3.0 + i * 0.45;
+          
+          const col_top = -8 + side * W_i - homeCoord.x;
+          const col_mid = -8 + side * R_i - homeCoord.x;
+          const col_bottom = -8 + side * W_i - homeCoord.x;
+          
+          const row_top_start = -MAX_GRID_COORD;
+          const row_top_curve = 37.5 - 12 - homeCoord.y;
+          const row_mid = 37.5 - homeCoord.y;
+          const row_bottom_curve = 37.5 + 12 - homeCoord.y;
+          const row_bottom_end = MAX_GRID_COORD;
+          
+          const x_top = GRID_CENTER_X + col_top * GRID_SPACING;
+          const x_mid = GRID_CENTER_X + col_mid * GRID_SPACING;
+          const x_bottom = GRID_CENTER_X + col_bottom * GRID_SPACING;
+          
+          const y_top_start = GRID_CENTER_Y + row_top_start * GRID_SPACING;
+          const y_top_curve = GRID_CENTER_Y + row_top_curve * GRID_SPACING;
+          const y_mid = GRID_CENTER_Y + row_mid * GRID_SPACING;
+          const y_bottom_curve = GRID_CENTER_Y + row_bottom_curve * GRID_SPACING;
+          const y_bottom_end = GRID_CENTER_Y + row_bottom_end * GRID_SPACING;
+          
+          const y_control_top = GRID_CENTER_Y + (37.5 - 6 - homeCoord.y) * GRID_SPACING;
+          const y_control_bottom = GRID_CENTER_Y + (37.5 + 6 - homeCoord.y) * GRID_SPACING;
+          
+          const pathD = `M ${x_top} ${y_top_start} ` +
+                        `L ${x_top} ${y_top_curve} ` +
+                        `C ${x_top} ${y_control_top}, ${x_mid} ${y_control_top}, ${x_mid} ${y_mid} ` +
+                        `C ${x_mid} ${y_control_bottom}, ${x_bottom} ${y_control_bottom}, ${x_bottom} ${y_bottom_curve} ` +
+                        `L ${x_bottom} ${y_bottom_end}`;
+                        
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', pathD);
+          path.setAttribute('fill', 'none');
+          
+          if (i === 0) {
             path.setAttribute('class', 'watermark-line-accent');
+          } else if (i % 2 === 1) {
+            path.setAttribute('class', 'watermark-line-yellow');
           } else {
             path.setAttribute('class', 'watermark-line');
           }
+          wmkGroup.appendChild(path);
         }
-        wmkGroup.appendChild(path);
-      }
+      });
       
-      // 3. Draw radial stairs/steps on Stage B: radiating from center (-8, 37)
-      const angles = [-45, -30, -15, 0, 15, 30, 45];
-      angles.forEach(angle => {
+      // 3. Draw radial stairs/steps on Stage B: radiating from center (-8, 37.5) on BOTH sides
+      const rightAngles = [-45, -30, -15, 0, 15, 30, 45];
+      const leftAngles = [135, 150, 165, 180, 195, 210, 225];
+      const allAngles = [...rightAngles, ...leftAngles];
+      
+      allAngles.forEach(angle => {
         const rad = (angle * Math.PI) / 180;
-        const r_start = 4.5 * GRID_SPACING;
-        const r_end = 10.5 * GRID_SPACING;
+        const r_start = 6.0 * GRID_SPACING;
+        const r_end = 8.7 * GRID_SPACING;
         
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         line.setAttribute('x1', stageB_svg.x + r_start * Math.cos(rad));
@@ -711,7 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wmkGroup.appendChild(line);
       });
       
-      // 4. Draw Faint text label "乙舞台" centered at (-8, 37)
+      // 4. Draw Faint text label "乙舞台" centered at (-8, 37.5)
       const stageBText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       stageBText.setAttribute('x', stageB_svg.x);
       stageBText.setAttribute('y', stageB_svg.y + 3);
