@@ -37,10 +37,13 @@ else:
                 performers.append(p)
                 
     # Generate data.js format content
+    def esc(s):
+        return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
+
     js_content = "// Performer Stage Formations Database\nconst performersData = [\n"
     for idx, p in enumerate(performers):
         comma = "," if idx < len(performers) - 1 else ""
-        js_content += f'  {{ category: "{p["category"]}", id: "{p["id"]}", name: "{p["name"]}", circle: "{p["circle"]}", xingYuan: "{p["xingYuan"]}", jingSi: "{p["jingSi"]}", lamp: "{p["lamp"]}", noBoat: "{p["noBoat"]}", bigV: "{p["bigV"]}" }}{comma}\n'
+        js_content += f'  {{ category: "{esc(p["category"])}", id: "{esc(p["id"])}", name: "{esc(p["name"])}", circle: "{esc(p["circle"])}", xingYuan: "{esc(p["xingYuan"])}", jingSi: "{esc(p["jingSi"])}", lamp: "{esc(p["lamp"])}", noBoat: "{esc(p["noBoat"])}", bigV: "{esc(p["bigV"])}" }}{comma}\n'
     js_content += "];\n\n// Export if in node environment, otherwise make it global\nif (typeof module !== 'undefined' && module.exports) {\n  module.exports = performersData;\n}\n"
     
     with open(js_path, mode='w', encoding='utf-8') as f:
