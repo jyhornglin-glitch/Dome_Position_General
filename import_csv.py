@@ -22,14 +22,15 @@ else:
         for row in reader:
             # Clean and strip values
             p = {
-                "category": row.get("category", "").strip(),
-                "id": row.get("id", "").strip(),
-                "name": row.get("name", "").strip(),
-                "circle": row.get("circle", "").strip(),
-                "xingYuan": row.get("xingYuan", "").strip(),
-                "jingSi": row.get("jingSi", "").strip(),
-                "lamp": row.get("lamp", "").strip(),
-                "bigV": row.get("bigV", "").strip()
+                "category": (row.get("category") or row.get("身分別") or "").strip(),
+                "id": (row.get("id") or row.get("身份證") or "").strip(),
+                "name": (row.get("name") or row.get("姓名") or "").strip(),
+                "circle": (row.get("circle") or row.get("01圓形") or "").strip(),
+                "xingYuan": (row.get("xingYuan") or row.get("02行願") or "").strip(),
+                "jingSi": (row.get("jingSi") or row.get("04靜思家風") or "").strip(),
+                "lamp": (row.get("lamp") or row.get("05-1有法船") or "").strip(),
+                "noBoat": (row.get("noBoat") or row.get("05-2無法船") or "").strip(),
+                "bigV": (row.get("bigV") or row.get("06四弘誓願") or "").strip()
             }
             # Add only if id is present (name is optional as it can be empty)
             if p["id"]:
@@ -39,7 +40,7 @@ else:
     js_content = "// Performer Stage Formations Database\nconst performersData = [\n"
     for idx, p in enumerate(performers):
         comma = "," if idx < len(performers) - 1 else ""
-        js_content += f'  {{ category: "{p["category"]}", id: "{p["id"]}", name: "{p["name"]}", circle: "{p["circle"]}", xingYuan: "{p["xingYuan"]}", jingSi: "{p["jingSi"]}", lamp: "{p["lamp"]}", bigV: "{p["bigV"]}" }}{comma}\n'
+        js_content += f'  {{ category: "{p["category"]}", id: "{p["id"]}", name: "{p["name"]}", circle: "{p["circle"]}", xingYuan: "{p["xingYuan"]}", jingSi: "{p["jingSi"]}", lamp: "{p["lamp"]}", noBoat: "{p["noBoat"]}", bigV: "{p["bigV"]}" }}{comma}\n'
     js_content += "];\n\n// Export if in node environment, otherwise make it global\nif (typeof module !== 'undefined' && module.exports) {\n  module.exports = performersData;\n}\n"
     
     with open(js_path, mode='w', encoding='utf-8') as f:

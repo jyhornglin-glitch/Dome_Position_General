@@ -58,14 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let GRID_SPACING = 15; // 1 coord unit = 15 pixels
   let MAX_GRID_COORD = 10;
 
-  // 6 Formations metadata
+  // 7 Formations metadata
   const formations = [
     { key: 'basic', name: '起點 (基本隊形)', label: '基本' },
-    { key: 'circle', name: '圓型', label: '圓型' },
-    { key: 'xingYuan', name: '行願', label: '行願' },
-    { key: 'jingSi', name: '靜思家風', label: '靜思' },
-    { key: 'lamp', name: '點一盞燈', label: '點燈' },
-    { key: 'bigV', name: '大Ｖ小Ｖ隊形', label: '大V小V' }
+    { key: 'circle', name: '01圓形', label: '圓形' },
+    { key: 'xingYuan', name: '02行願', label: '行願' },
+    { key: 'jingSi', name: '04靜思家風', label: '靜思' },
+    { key: 'lamp', name: '05-1有法船', label: '有法船' },
+    { key: 'noBoat', name: '05-2無法船', label: '無法船' },
+    { key: 'bigV', name: '06四弘誓願', label: '四弘誓願' }
   ];
 
   // Get coordinate and name dynamically to handle inconsistent data keys in data.js
@@ -356,13 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const vectorHome = document.getElementById(`vector-${f.key}-home`);
       const vectorPrev = document.getElementById(`vector-${f.key}-prev`);
       
-      let coordStr = '';
-      if (f.key === 'basic') coordStr = fields.coordinate;
-      else if (f.key === 'circle') coordStr = currentPerformer.circle;
-      else if (f.key === 'xingYuan') coordStr = currentPerformer.xingYuan;
-      else if (f.key === 'jingSi') coordStr = currentPerformer.jingSi;
-      else if (f.key === 'lamp') coordStr = currentPerformer.lamp;
-      else if (f.key === 'bigV') coordStr = currentPerformer.bigV;
+      let coordStr = f.key === 'basic' ? fields.coordinate : currentPerformer[f.key];
       coordBadge.textContent = coordStr;
       
       // Render HTML landmark icons
@@ -392,12 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
         vectorHome.textContent = getVectorDescription(basicCoord, currentCoord);
         
         const prevKey = formations[formations.findIndex(x => x.key === f.key) - 1].key;
-        let prevCoordStr = '';
-        if (prevKey === 'basic') prevCoordStr = fields.coordinate;
-        else if (prevKey === 'circle') prevCoordStr = currentPerformer.circle;
-        else if (prevKey === 'xingYuan') prevCoordStr = currentPerformer.xingYuan;
-        else if (prevKey === 'jingSi') prevCoordStr = currentPerformer.jingSi;
-        else if (prevKey === 'lamp') prevCoordStr = currentPerformer.lamp;
+        let prevCoordStr = prevKey === 'basic' ? fields.coordinate : currentPerformer[prevKey];
         
         const prevCoord = parseCoordinate(prevCoordStr);
         vectorPrev.textContent = getVectorDescription(prevCoord, currentCoord);
@@ -546,13 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Calculate dynamic scale based on maximum coordinate offset of points to display
     let maxOffset = 0;
     const tempPoints = formations.map((f) => {
-      let coordStr = '';
-      if (f.key === 'basic') coordStr = fields.coordinate;
-      else if (f.key === 'circle') coordStr = currentPerformer.circle;
-      else if (f.key === 'xingYuan') coordStr = currentPerformer.xingYuan;
-      else if (f.key === 'jingSi') coordStr = currentPerformer.jingSi;
-      else if (f.key === 'lamp') coordStr = currentPerformer.lamp;
-      else if (f.key === 'bigV') coordStr = currentPerformer.bigV;
+      let coordStr = f.key === 'basic' ? fields.coordinate : currentPerformer[f.key];
       
       const coord = parseCoordinate(coordStr);
       let dx_rel = 0;
@@ -788,13 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Calculate relative coordinates and map to SVG coords
     const allPoints = formations.map((f, idx) => {
-      let coordStr = '';
-      if (f.key === 'basic') coordStr = fields.coordinate;
-      else if (f.key === 'circle') coordStr = currentPerformer.circle;
-      else if (f.key === 'xingYuan') coordStr = currentPerformer.xingYuan;
-      else if (f.key === 'jingSi') coordStr = currentPerformer.jingSi;
-      else if (f.key === 'lamp') coordStr = currentPerformer.lamp;
-      else if (f.key === 'bigV') coordStr = currentPerformer.bigV;
+      let coordStr = f.key === 'basic' ? fields.coordinate : currentPerformer[f.key];
       
       const coord = parseCoordinate(coordStr);
       
@@ -848,6 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
       xingYuan: '#16a34a',   // 綠色
       jingSi: '#eab308',     // 黃色
       lamp: '#4ade80',       // 淺綠色
+      noBoat: '#3b82f6',     // 藍色
       bigV: '#ec4899'        // 粉紅色
     };
     
@@ -1003,24 +982,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const mapMovementGuide = document.getElementById('mapMovementGuide');
       if (mapMovementGuide) {
         const f = formations[activeFormationIdx];
-        let coordStr = '';
-        if (f.key === 'basic') coordStr = fields.coordinate;
-        else if (f.key === 'circle') coordStr = currentPerformer.circle;
-        else if (f.key === 'xingYuan') coordStr = currentPerformer.xingYuan;
-        else if (f.key === 'jingSi') coordStr = currentPerformer.jingSi;
-        else if (f.key === 'lamp') coordStr = currentPerformer.lamp;
-        else if (f.key === 'bigV') coordStr = currentPerformer.bigV;
+        let coordStr = f.key === 'basic' ? fields.coordinate : currentPerformer[f.key];
 
         if (activeFormationIdx === 0) {
           mapMovementGuide.innerHTML = `<i class="fa-solid fa-street-view" style="color: var(--red-color); margin-right: 5px;"></i><strong>起點就位</strong>：至起點座標點 <strong>(${coordStr})</strong> 就定位。`;
         } else {
           const prevKey = formations[activeFormationIdx - 1].key;
-          let prevCoordStr = '';
-          if (prevKey === 'basic') prevCoordStr = fields.coordinate;
-          else if (prevKey === 'circle') prevCoordStr = currentPerformer.circle;
-          else if (prevKey === 'xingYuan') prevCoordStr = currentPerformer.xingYuan;
-          else if (prevKey === 'jingSi') prevCoordStr = currentPerformer.jingSi;
-          else if (prevKey === 'lamp') prevCoordStr = currentPerformer.lamp;
+          let prevCoordStr = prevKey === 'basic' ? fields.coordinate : currentPerformer[prevKey];
           
           const prevCoord = parseCoordinate(prevCoordStr);
           const currentCoord = parseCoordinate(coordStr);
@@ -1203,13 +1171,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const title = document.createElement('div');
       title.className = 'nav-step-title';
       
-      let coordStr = '';
-      if (f.key === 'basic') coordStr = fields.coordinate;
-      else if (f.key === 'circle') coordStr = currentPerformer.circle;
-      else if (f.key === 'xingYuan') coordStr = currentPerformer.xingYuan;
-      else if (f.key === 'jingSi') coordStr = currentPerformer.jingSi;
-      else if (f.key === 'lamp') coordStr = currentPerformer.lamp;
-      else if (f.key === 'bigV') coordStr = currentPerformer.bigV;
+      let coordStr = f.key === 'basic' ? fields.coordinate : currentPerformer[f.key];
       
       const stepName = document.createElement('span');
       stepName.className = 'step-name';
@@ -1230,12 +1192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         descr.innerHTML = `<strong>起點就位</strong>：至起點座標點 <strong>(${coordStr})</strong> 就定位。`;
       } else {
         const prevKey = formations[idx - 1].key;
-        let prevCoordStr = '';
-        if (prevKey === 'basic') prevCoordStr = fields.coordinate;
-        else if (prevKey === 'circle') prevCoordStr = currentPerformer.circle;
-        else if (prevKey === 'xingYuan') prevCoordStr = currentPerformer.xingYuan;
-        else if (prevKey === 'jingSi') prevCoordStr = currentPerformer.jingSi;
-        else if (prevKey === 'lamp') prevCoordStr = currentPerformer.lamp;
+        let prevCoordStr = prevKey === 'basic' ? fields.coordinate : currentPerformer[prevKey];
         
         const prevCoord = parseCoordinate(prevCoordStr);
         const currentCoord = parseCoordinate(coordStr);
