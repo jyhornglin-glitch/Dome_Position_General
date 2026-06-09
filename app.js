@@ -572,9 +572,9 @@ document.addEventListener('DOMContentLoaded', () => {
       maxOffset = Math.max(maxOffset, Math.abs(pt.dx_rel), Math.abs(pt.dy_rel));
     });
     
-    // Always include Stage B center (-6, 37) in the visible map area
+    // Always include Stage B center (0, 37) in the visible map area
     if (!homeCoord.isText) {
-      const stageB_dx_rel = -6 - homeCoord.x;
+      const stageB_dx_rel = 0 - homeCoord.x;
       const stageB_dy_rel = 37 - homeCoord.y;
       maxOffset = Math.max(maxOffset, Math.abs(stageB_dx_rel), Math.abs(stageB_dy_rel));
     }
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Draw Stage B blueprint watermark background
     if (!homeCoord.isText) {
       // 0. Draw Stage Background to mask the grid lines underneath
-      const bg_x1_rel = -8 - homeCoord.x;
+      const bg_x1_rel = -3 - homeCoord.x;
       const bg_y1_rel = -MAX_GRID_COORD;
       const bg_svgTopLeft = gridToSvg(bg_x1_rel, bg_y1_rel);
       const bg_width = 6 * GRID_SPACING;
@@ -634,8 +634,8 @@ document.addEventListener('DOMContentLoaded', () => {
       bgRect.setAttribute('class', 'watermark-bg');
       wmkGroup.appendChild(bgRect);
       
-      // Stage B Circular Background: Col = -6, Row = 37, Radius = 10.5
-      const stageB_dx_rel = -6 - homeCoord.x;
+      // Stage B Circular Background: Col = 0, Row = 37, Radius = 10.5
+      const stageB_dx_rel = 0 - homeCoord.x;
       const stageB_dy_rel = 37 - homeCoord.y;
       const stageB_svg = gridToSvg(stageB_dx_rel, stageB_dy_rel);
       
@@ -646,8 +646,8 @@ document.addEventListener('DOMContentLoaded', () => {
       bgCircle.setAttribute('class', 'watermark-bg');
       wmkGroup.appendChild(bgCircle);
 
-      // 1. Draw Runway Central Rectangle: Col = -8 to -4, Row = 32 to 42
-      const rect_x1_rel = -8 - homeCoord.x;
+      // 1. Draw Runway Central Rectangle: Col = -2 to 2, Row = 32 to 42
+      const rect_x1_rel = -2 - homeCoord.x;
       const rect_y1_rel = 32 - homeCoord.y;
       const rect_svgTopLeft = gridToSvg(rect_x1_rel, rect_y1_rel);
       const rect_width = 4 * GRID_SPACING;
@@ -666,9 +666,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const R_i = 4.5 + i * 0.5;
         const W_i = 2.0 + i * (2.0 / 12.0);
         
-        const col_top = -6 + W_i - homeCoord.x;
-        const col_mid = -6 + R_i - homeCoord.x;
-        const col_bottom = -6 + W_i - homeCoord.x;
+        const col_top = 0 + W_i - homeCoord.x;
+        const col_mid = 0 + R_i - homeCoord.x;
+        const col_bottom = 0 + W_i - homeCoord.x;
         
         const row_top_start = -MAX_GRID_COORD;
         const row_top_curve = 37 - 12 - homeCoord.y;
@@ -711,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wmkGroup.appendChild(path);
       }
       
-      // 3. Draw radial stairs/steps on Stage B: radiating from center (-6, 37)
+      // 3. Draw radial stairs/steps on Stage B: radiating from center (0, 37)
       const angles = [-45, -30, -15, 0, 15, 30, 45];
       angles.forEach(angle => {
         const rad = (angle * Math.PI) / 180;
@@ -727,7 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wmkGroup.appendChild(line);
       });
       
-      // 4. Draw Faint text label "乙舞台" centered at (-6, 37)
+      // 4. Draw Faint text label "乙舞台" centered at (0, 37)
       const stageBText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       stageBText.setAttribute('x', stageB_svg.x);
       stageBText.setAttribute('y', stageB_svg.y + 3);
