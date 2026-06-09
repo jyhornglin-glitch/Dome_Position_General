@@ -764,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
         xText.setAttribute('x', GRID_CENTER_X + posOffset);
         xText.setAttribute('y', GRID_CENTER_Y + 11);
         if (!homeCoord.isText) {
-          const val = - (homeCoord.x + i);
+          const val = Math.abs(homeCoord.x + i);
           xText.textContent = val.toFixed(1).replace('.0', '');
         } else {
           xText.textContent = i > 0 ? `右${i}` : `左${Math.abs(i)}`;
