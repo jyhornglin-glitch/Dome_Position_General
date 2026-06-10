@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const filtered = performersData.filter(p => {
         if (category !== 'all' && p.category !== category) return false;
         return p.name.toLowerCase().includes(val) || p.id.includes(val);
-      }).slice(0, 8);
+      }).slice(0, 100);
       
       renderAutocomplete(filtered);
     });

@@ -386,7 +386,7 @@ body {
   border-radius: 10px;
   box-shadow: var(--dropdown-shadow);
   z-index: 120;
-  max-height: 200px;
+  max-height: 350px;
   overflow-y: auto;
 }
 
