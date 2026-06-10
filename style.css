@@ -333,6 +333,7 @@ body {
 
 .search-box {
   position: relative;
+  z-index: 90;
 }
 
 .input-group {
@@ -388,6 +389,7 @@ body {
   z-index: 120;
   max-height: 350px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .autocomplete-item {
