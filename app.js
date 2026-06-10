@@ -590,10 +590,10 @@ document.addEventListener('DOMContentLoaded', () => {
       maxOffset = Math.max(maxOffset, Math.abs(pt.dx_rel), Math.abs(pt.dy_rel));
     });
     
-    // Always include Stage B center (-7, 37.5) in the visible map area
+    // Always include Stage B center (-6, 38) in the visible map area
     if (!homeCoord.isText) {
-      const stageB_dx_rel = -7 - homeCoord.x;
-      const stageB_dy_rel = 37.5 - homeCoord.y;
+      const stageB_dx_rel = -6 - homeCoord.x;
+      const stageB_dy_rel = 38 - homeCoord.y;
       maxOffset = Math.max(maxOffset, Math.abs(stageB_dx_rel), Math.abs(stageB_dy_rel));
     }
     
@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Draw Stage B blueprint watermark background
     if (!homeCoord.isText) {
       // 0. Draw Stage Background to mask the grid lines underneath
-      const bg_x1_rel = -10 - homeCoord.x;
+      const bg_x1_rel = -9 - homeCoord.x;
       const bg_y1_rel = -MAX_GRID_COORD;
       const bg_svgTopLeft = gridToSvg(bg_x1_rel, bg_y1_rel);
       const bg_width = 6 * GRID_SPACING;
@@ -652,9 +652,9 @@ document.addEventListener('DOMContentLoaded', () => {
       bgRect.setAttribute('class', 'watermark-bg');
       wmkGroup.appendChild(bgRect);
       
-      // Stage B Circular Background: Col = -7, Row = 37.5, Radius = 8.4 (outermost step)
-      const stageB_dx_rel = -7 - homeCoord.x;
-      const stageB_dy_rel = 37.5 - homeCoord.y;
+      // Stage B Circular Background: Col = -6, Row = 38, Radius = 8.4 (outermost step)
+      const stageB_dx_rel = -6 - homeCoord.x;
+      const stageB_dy_rel = 38 - homeCoord.y;
       const stageB_svg = gridToSvg(stageB_dx_rel, stageB_dy_rel);
       
       const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -664,9 +664,9 @@ document.addEventListener('DOMContentLoaded', () => {
       bgCircle.setAttribute('class', 'watermark-bg');
       wmkGroup.appendChild(bgCircle);
 
-      // 1. Draw Runway Central Rectangle: Col = -10 to -4, Row = 32.5 to 42.5
-      const rect_x1_rel = -10 - homeCoord.x;
-      const rect_y1_rel = 32.5 - homeCoord.y;
+      // 1. Draw Runway Central Rectangle: Col = -9 to -3, Row = 33 to 43
+      const rect_x1_rel = -9 - homeCoord.x;
+      const rect_y1_rel = 33 - homeCoord.y;
       const rect_svgTopLeft = gridToSvg(rect_x1_rel, rect_y1_rel);
       const rect_width = 6 * GRID_SPACING;
       const rect_height = 10 * GRID_SPACING;
@@ -696,14 +696,14 @@ document.addEventListener('DOMContentLoaded', () => {
           const R_i = 6.0 + i * 0.4;
           const W_i = 3.0 + i * 0.4;
           
-          const col_top = -7 + side * W_i - homeCoord.x;
-          const col_mid = -7 + side * R_i - homeCoord.x;
-          const col_bottom = -7 + side * W_i - homeCoord.x;
+          const col_top = -6 + side * W_i - homeCoord.x;
+          const col_mid = -6 + side * R_i - homeCoord.x;
+          const col_bottom = -6 + side * W_i - homeCoord.x;
           
           const row_top_start = -MAX_GRID_COORD;
-          const row_top_curve = 37.5 - 12 - homeCoord.y;
-          const row_mid = 37.5 - homeCoord.y;
-          const row_bottom_curve = 37.5 + 12 - homeCoord.y;
+          const row_top_curve = 38 - 12 - homeCoord.y;
+          const row_mid = 38 - homeCoord.y;
+          const row_bottom_curve = 38 + 12 - homeCoord.y;
           const row_bottom_end = MAX_GRID_COORD;
           
           const x_top = GRID_CENTER_X + col_top * GRID_SPACING;
@@ -716,8 +716,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const y_bottom_curve = GRID_CENTER_Y + row_bottom_curve * GRID_SPACING;
           const y_bottom_end = GRID_CENTER_Y + row_bottom_end * GRID_SPACING;
           
-          const y_control_top = GRID_CENTER_Y + (37.5 - 6 - homeCoord.y) * GRID_SPACING;
-          const y_control_bottom = GRID_CENTER_Y + (37.5 + 6 - homeCoord.y) * GRID_SPACING;
+          const y_control_top = GRID_CENTER_Y + (38 - 6 - homeCoord.y) * GRID_SPACING;
+          const y_control_bottom = GRID_CENTER_Y + (38 + 6 - homeCoord.y) * GRID_SPACING;
           
           const pathD = `M ${x_top} ${y_top_start} ` +
                         `L ${x_top} ${y_top_curve} ` +
@@ -740,7 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       
-      // 3. Draw radial stairs/steps on Stage B: radiating from center (-7, 37.5) on BOTH sides
+      // 3. Draw radial stairs/steps on Stage B: radiating from center (-6, 38) on BOTH sides
       const rightAngles = [-45, -30, -15, 0, 15, 30, 45];
       const leftAngles = [135, 150, 165, 180, 195, 210, 225];
       const allAngles = [...rightAngles, ...leftAngles];
@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wmkGroup.appendChild(line);
       });
       
-      // 4. Draw Faint text label "乙舞台" centered at (-7, 37.5)
+      // 4. Draw Faint text label "乙舞台" centered at (-6, 38)
       const stageBText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       stageBText.setAttribute('x', stageB_svg.x);
       stageBText.setAttribute('y', stageB_svg.y + 3);
