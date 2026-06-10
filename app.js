@@ -152,6 +152,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Helper to split landmark text and numeric coordinates
+  function splitLandmarkAndCoordinate(coordStr) {
+    if (!coordStr) return { landmark: '', coordinate: '' };
+    const cleanStr = coordStr.replace(/[()]/g, '').trim();
+    // Match coordinate patterns like -8-58.5, 6.2-49.2, -50.2, etc. at the end
+    const coordRegex = /(-?\d+(\.\d+)?([^\d.-]*-?\d+(\.\d+)?)*)$/;
+    const match = cleanStr.match(coordRegex);
+    if (match) {
+      const coordinatePart = match[1];
+      const landmarkPart = cleanStr.substring(0, cleanStr.length - coordinatePart.length).replace(/[-#\s]+$/, '').trim();
+      return {
+        landmark: landmarkPart,
+        coordinate: coordinatePart
+      };
+    } else {
+      return {
+        landmark: cleanStr,
+        coordinate: ''
+      };
+    }
+  }
+
   // Color mapping helper
   function getCategoryColor(category) {
     switch(category) {
@@ -905,30 +927,40 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Draw coordinate label under the node (scaled down to 62.5% of original, i.e., 25% larger than 50%)
       if (pt.coord && pt.coord.text) {
-        const textLength = pt.coord.text.length;
-        const bgWidth = (textLength * 5.2 + 6) * 0.625;
-        const bgHeight = 6.875;
-        const labelY = pt.pos.y + landmarkSize / 2 + 6.5; // position label dynamically below the node
+        const split = splitLandmarkAndCoordinate(pt.coord.text);
+        let labelToShow = '';
+        if (pt.role === 'current') {
+          labelToShow = pt.coord.text;
+        } else {
+          labelToShow = split.landmark;
+        }
         
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', pt.pos.x - bgWidth / 2);
-        rect.setAttribute('y', labelY - bgHeight / 2);
-        rect.setAttribute('width', bgWidth);
-        rect.setAttribute('height', bgHeight);
-        let bgClass = 'path-label-bg';
-        if (pt.role === 'current') bgClass += ' bg-current';
-        rect.setAttribute('class', bgClass);
-        g.appendChild(rect);
-        
-        const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        textEl.setAttribute('x', pt.pos.x);
-        textEl.setAttribute('y', labelY + 1.56); // vertical baseline alignment for 62.5% scale
-        let textClass = 'path-label-text';
-        if (pt.role === 'current') textClass += ' label-current';
-        else if (pt.role === 'prev') textClass += ' label-prev';
-        textEl.setAttribute('class', textClass);
-        textEl.textContent = pt.coord.text;
-        g.appendChild(textEl);
+        if (labelToShow) {
+          const textLength = labelToShow.length;
+          const bgWidth = (textLength * 5.2 + 6) * 0.625;
+          const bgHeight = 6.875;
+          const labelY = pt.pos.y + landmarkSize / 2 + 6.5; // position label dynamically below the node
+          
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', pt.pos.x - bgWidth / 2);
+          rect.setAttribute('y', labelY - bgHeight / 2);
+          rect.setAttribute('width', bgWidth);
+          rect.setAttribute('height', bgHeight);
+          let bgClass = 'path-label-bg';
+          if (pt.role === 'current') bgClass += ' bg-current';
+          rect.setAttribute('class', bgClass);
+          g.appendChild(rect);
+          
+          const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          textEl.setAttribute('x', pt.pos.x);
+          textEl.setAttribute('y', labelY + 1.56); // vertical baseline alignment for 62.5% scale
+          let textClass = 'path-label-text';
+          if (pt.role === 'current') textClass += ' label-current';
+          else if (pt.role === 'prev') textClass += ' label-prev';
+          textEl.setAttribute('class', textClass);
+          textEl.textContent = labelToShow;
+          g.appendChild(textEl);
+        }
       }
       
       if (isMainSvg) {
@@ -992,10 +1024,20 @@ document.addEventListener('DOMContentLoaded', () => {
           
           const valSpan = document.createElement('span');
           valSpan.className = 'val';
-          if (!pt.coord.isText) {
-            valSpan.textContent = `${pt.coord.text} (${pt.coord.x.toFixed(1).replace('.0', '')}, ${pt.coord.y.toFixed(1).replace('.0', '')})`;
-          } else {
+          const split = splitLandmarkAndCoordinate(pt.coord.text);
+          if (pt.role === 'basic') {
+            // 起點 (身分證位置): "只要顯示身分證位置就好"
             valSpan.textContent = pt.coord.text;
+          } else if (pt.role === 'current') {
+            // 目前位置: "網格定位只要顯示目前位置地標的座標"
+            if (!pt.coord.isText) {
+              valSpan.textContent = `${pt.coord.text} (${pt.coord.x.toFixed(1).replace('.0', '')}, ${pt.coord.y.toFixed(1).replace('.0', '')})`;
+            } else {
+              valSpan.textContent = pt.coord.text;
+            }
+          } else {
+            // 其遊: "其餘只顯示地標就好"
+            valSpan.textContent = split.landmark || '';
           }
           
           itemDiv.appendChild(labelSpan);
