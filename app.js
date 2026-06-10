@@ -679,8 +679,8 @@ document.addEventListener('DOMContentLoaded', () => {
       rect.setAttribute('class', 'watermark-rect');
       wmkGroup.appendChild(rect);
       
-      // 1.5 Draw central square in circle (size 6.0)
-      const squareSize = 6.0 * GRID_SPACING;
+      // 1.5 Draw central square in circle (size 8.0)
+      const squareSize = 8.0 * GRID_SPACING;
       const squareRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       squareRect.setAttribute('x', stageB_svg.x - squareSize / 2);
       squareRect.setAttribute('y', stageB_svg.y - squareSize / 2);
@@ -692,9 +692,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // 2. Draw bulging concentric lines representing stage B circles and runway steps on BOTH sides
       const sides = [1, -1];
       sides.forEach(side => {
-        for (let i = 0; i <= 11; i++) {
-          const R_i = 6.0 + i * 0.4;
-          const W_i = 3.0 + i * 0.4;
+        for (let i = 0; i <= 6; i++) {
+          const R_i = 8.0 + i * 0.4;
+          const W_i = 4.0 + i * 0.4;
           
           const col_top = -6 + side * W_i - homeCoord.x;
           const col_mid = -6 + side * R_i - homeCoord.x;
@@ -747,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       allAngles.forEach(angle => {
         const rad = (angle * Math.PI) / 180;
-        const r_start = 6.0 * GRID_SPACING;
+        const r_start = 8.0 * GRID_SPACING;
         const r_end = 10.4 * GRID_SPACING;
         
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
