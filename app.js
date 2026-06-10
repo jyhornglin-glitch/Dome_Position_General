@@ -652,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
       bgRect.setAttribute('class', 'watermark-bg');
       wmkGroup.appendChild(bgRect);
       
-      // Stage B Circular Background: Col = -6, Row = 38, Radius = 11.0 (outermost step, gap=0.6, diameter=22.0)
+      // Stage B Circular Background: Col = -6, Row = 38, Radius = 9.8 (outermost step, inner gap=-0.6 toward stage, diameter=19.6)
       const stageB_dx_rel = -6 - homeCoord.x;
       const stageB_dy_rel = 38 - homeCoord.y;
       const stageB_svg = gridToSvg(stageB_dx_rel, stageB_dy_rel);
@@ -660,7 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       bgCircle.setAttribute('cx', stageB_svg.x);
       bgCircle.setAttribute('cy', stageB_svg.y);
-      bgCircle.setAttribute('r', 11.0 * GRID_SPACING);
+      bgCircle.setAttribute('r', 9.8 * GRID_SPACING);
       bgCircle.setAttribute('class', 'watermark-bg');
       wmkGroup.appendChild(bgCircle);
 
@@ -693,8 +693,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const sides = [1, -1];
       sides.forEach(side => {
         for (let i = 0; i <= 6; i++) {
-          const R_i = 8.6 + i * 0.4;
-          const W_i = 4.6 + i * 0.4;
+          const R_i = 7.4 + i * 0.4;
+          const W_i = 3.4 + i * 0.4;
           
           const col_top = -6 + side * W_i - homeCoord.x;
           const col_mid = -6 + side * R_i - homeCoord.x;
@@ -748,7 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
       allAngles.forEach(angle => {
         const rad = (angle * Math.PI) / 180;
         const r_start = 8.0 * GRID_SPACING;
-        const r_end = 11.0 * GRID_SPACING;
+        const r_end = 9.8 * GRID_SPACING;
         
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         line.setAttribute('x1', stageB_svg.x + r_start * Math.cos(rad));
