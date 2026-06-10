@@ -378,10 +378,6 @@ body {
 
 /* Autocomplete suggestions overlay */
 .autocomplete-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  width: 100%;
   background: var(--dropdown-bg);
   border: 1px solid var(--dropdown-border);
   border-radius: 10px;
@@ -390,6 +386,8 @@ body {
   max-height: 350px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 .autocomplete-item {

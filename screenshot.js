@@ -22,7 +22,7 @@ async function captureScreenshots(port, outputDir) {
   // 1. Screenshot 1: Search active
   console.log("Creating Screenshot 1: Main Search Interface...");
   await page.focus('#searchInput');
-  await page.keyboard.type('4-50');
+  await page.keyboard.type('04-50');
   await new Promise(r => setTimeout(r, 800));
   await page.screenshot({ path: path.join(outputDir, 'screenshot_p1.png') });
   console.log("Screenshot 1 saved.");

@@ -178,7 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const filtered = performersData.filter(p => {
         if (category !== 'all' && p.category !== category) return false;
-        return p.name.toLowerCase().includes(val) || p.id.includes(val);
+        
+        // Normalize search term and fields for comparison (e.g. "04-50" -> "4-50")
+        const normalizedVal = val.replace(/^0+(\d+)/, '$1').replace(/-0+(\d+)/, '-$1');
+        const normalizedId = p.id.replace(/^0+(\d+)/, '$1').replace(/-0+(\d+)/, '-$1');
+        
+        return p.name.toLowerCase().includes(val) || 
+               p.id.includes(val) || 
+               normalizedId.includes(normalizedVal);
       }).slice(0, 100);
       
       renderAutocomplete(filtered);
