@@ -1529,13 +1529,12 @@ svg {
 /* Map Coordinates Display Bar (指示圖上方位置標示) */
 .map-coord-display-bar {
   display: flex;
-  justify-content: space-around;
-  background: rgba(15, 23, 42, 0.4);
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.35);
   border: 1px solid var(--panel-border);
-  border-radius: 10px;
-  padding: 8px 6px;
+  border-radius: 12px;
+  padding: 6px;
   margin: 10px 15px 5px 15px;
-  font-size: 11px;
   backdrop-filter: blur(10px);
 }
 
@@ -1543,31 +1542,50 @@ svg {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  gap: 3px;
   flex: 1;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 0;
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 6px 4px;
+  transition: all 0.2s ease;
 }
 
-.map-coord-item:last-child {
-  border-right: none;
+.map-coord-item.active-node {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.1);
 }
 
 .map-coord-item .label {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
 }
 
 .map-coord-item .val {
   color: var(--text-primary);
-  font-weight: 700;
-  font-family: monospace;
+  font-weight: 800;
+  font-size: 13px;
+  font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
 }
 
 .map-coord-item.active-node .val {
   color: var(--gold-color);
-  text-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+  text-shadow: 0 0 6px rgba(245, 158, 11, 0.3);
 }
 
 /* Map Action Buttons below SVG map */
