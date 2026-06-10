@@ -1024,21 +1024,8 @@ document.addEventListener('DOMContentLoaded', () => {
           
           const valSpan = document.createElement('span');
           valSpan.className = 'val';
-          const split = splitLandmarkAndCoordinate(pt.coord.text);
-          if (pt.role === 'basic') {
-            // 起點 (身分證位置): "只要顯示身分證位置就好"
-            valSpan.textContent = pt.coord.text;
-          } else if (pt.role === 'current') {
-            // 目前位置: "網格定位只要顯示目前位置地標的座標"
-            if (!pt.coord.isText) {
-              valSpan.textContent = `${pt.coord.text} (${pt.coord.x.toFixed(1).replace('.0', '')}, ${pt.coord.y.toFixed(1).replace('.0', '')})`;
-            } else {
-              valSpan.textContent = pt.coord.text;
-            }
-          } else {
-            // 其遊: "其餘只顯示地標就好"
-            valSpan.textContent = split.landmark || '';
-          }
+          // 3個點都只要顯示身分證位置，不要顯示真實座標
+          valSpan.textContent = pt.coord.text;
           
           itemDiv.appendChild(labelSpan);
           itemDiv.appendChild(valSpan);
