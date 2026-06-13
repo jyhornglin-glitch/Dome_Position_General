@@ -45,12 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // State variables
   let currentPerformer = null;
+  let currentDisplayName = ''; // Day-specific name (blank when session has no data)
+  let currentDayNameMap = {}; // id -> name for the selected session
   let activeTab = 'localGrid'; // Default mobile tab is Grid view
   let activeFormationIdx = 0; // Current active formation index (0 to 5)
   let zoomLevel = 1.0;
   let panX = 0;
   let panY = 0;
   let rotationAngle = 0;
+  let selectedSessionKey = null; // Currently selected day key (e.g. '1114')
 
   // Relative Grid coordinate configuration
   const GRID_CENTER_X = 180;
@@ -69,25 +72,72 @@ document.addEventListener('DOMContentLoaded', () => {
     { key: 'bigV', name: '06四弘誓願', label: '四弘誓願' }
   ];
 
-  // Get coordinate and name dynamically to handle inconsistent data keys in data.js
+  // Get coordinate and name from performer record.
+  // Since v1.2.8: name is always empty in performersData (supplied by dayperformers.csv).
+  // id field always holds the stage coordinate (e.g. "1-49").
   function getPerformerFields(performer) {
     if (!performer) return { coordinate: '', name: '' };
-    // Check if the 'name' field contains digits or hyphens, indicating it is the coordinate
-    if (/[\d-]/.test(performer.name)) {
-      return {
-        coordinate: performer.name,
-        name: performer.id
-      };
-    } else {
-      return {
-        coordinate: performer.id,
-        name: performer.name
-      };
-    }
+    return {
+      coordinate: performer.id,
+      name: performer.name || ''
+    };
   }
 
-  // Initialize App
-  init();
+  // Initialize App — session overlay first
+  setupSessionOverlay();
+
+  // ─── Session Selection Overlay ───────────────────────────────────────────
+  function setupSessionOverlay() {
+    const overlay = document.getElementById('sessionOverlay');
+    const cardsContainer = document.getElementById('sessionCards');
+    const confirmBtn = document.getElementById('sessionConfirmBtn');
+    const sessionBadge = document.getElementById('currentSessionBadge');
+    if (!overlay || !cardsContainer || !confirmBtn) { init(); return; }
+
+    // Build session cards from DAY_SESSIONS
+    DAY_SESSIONS.forEach(sess => {
+      const card = document.createElement('div');
+      card.className = 'session-card';
+      card.dataset.key = sess.key;
+
+      const parts = sess.label.match(/^(\d+\/\d+)\((.+)\)$/);
+      const datePart   = parts ? parts[1] : sess.label;
+      const weekPart   = parts ? parts[2] : '';
+
+      card.innerHTML = `
+        <span class="session-card-weekday">${weekPart}</span>
+        <span class="session-card-date">${datePart}</span>
+        <span class="session-card-count">${sess.count > 0 ? sess.count + ' 人' : '待補'}</span>
+      `;
+
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.session-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedSessionKey = sess.key;
+        confirmBtn.disabled = false;
+      });
+
+      cardsContainer.appendChild(card);
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      if (!selectedSessionKey) return;
+      const sess = DAY_SESSIONS.find(s => s.key === selectedSessionKey);
+      // Show badge in header
+      if (sessionBadge && sess) {
+        sessionBadge.textContent = sess.label;
+        sessionBadge.style.display = 'inline-block';
+      }
+      // Hide overlay with fade
+      overlay.style.transition = 'opacity 0.35s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => { overlay.style.display = 'none'; }, 360);
+      // Start main app
+      init();
+    });
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
 
   function init() {
     setupTime();
@@ -196,21 +246,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       clearSearchBtn.style.display = 'block';
+      // Build search list from selected day's performers (by id/name)
+      // then look up in performersData for coordinate data
+      const dayList = (typeof DAY_PERFORMERS !== 'undefined' && selectedSessionKey)
+        ? (DAY_PERFORMERS[selectedSessionKey] || [])
+        : [];
+
+      // Build a quick lookup: id -> dayName
+      const dayNameMap = {};
+      dayList.forEach(d => { dayNameMap[d.id] = d.name; });
+      currentDayNameMap = dayNameMap; // expose to drawLocalGridPath
+
       const category = categoryFilter.value;
-      
+      const normalizedVal = val.replace(/^0+(\d+)/, '$1').replace(/-0+(\d+)/, '-$1');
+
       const filtered = performersData.filter(p => {
         if (category !== 'all' && p.category !== category) return false;
-        
-        // Normalize search term and fields for comparison (e.g. "04-50" -> "4-50")
-        const normalizedVal = val.replace(/^0+(\d+)/, '$1').replace(/-0+(\d+)/, '-$1');
         const normalizedId = p.id.replace(/^0+(\d+)/, '$1').replace(/-0+(\d+)/, '-$1');
-        
-        return p.name.toLowerCase().includes(val) || 
-               p.id.includes(val) || 
+        const fields = getPerformerFields(p);
+        // Only search by current session's name (dayName) or by coordinate/id.
+        // Never use data.js fields.name to avoid cross-session name leakage.
+        const dayName = dayNameMap[fields.coordinate] || dayNameMap[p.id] || '';
+        return dayName.toLowerCase().includes(val) ||
+               p.id.includes(val) ||
                normalizedId.includes(normalizedVal);
       }).slice(0, 100);
-      
-      renderAutocomplete(filtered);
+
+      renderAutocomplete(filtered, dayNameMap);
     });
 
     searchInput.addEventListener('focus', () => {
@@ -225,8 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function renderAutocomplete(list) {
+  function renderAutocomplete(list, dayNameMap) {
     autocompleteList.innerHTML = '';
+    dayNameMap = dayNameMap || {};
     
     if (list.length === 0) {
       const div = document.createElement('div');
@@ -241,12 +304,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     list.forEach(p => {
       const fields = getPerformerFields(p);
+      // displayName: STRICTLY from current session's dayNameMap only.
+      // Never fall back to data.js fields.name to prevent cross-session name leakage.
+      const dayName = dayNameMap[fields.coordinate] || dayNameMap[p.id] || '';
+      const displayName = dayName; // '' when session has no data → shows blank
+
       const div = document.createElement('div');
       div.className = 'autocomplete-item';
       
       const textDiv = document.createElement('div');
       textDiv.className = 'name-id';
-      textDiv.innerHTML = `${fields.name} <span>(${fields.coordinate})</span>`;
+      textDiv.innerHTML = `${displayName} <span>(${fields.coordinate})</span>`;
       
       const badge = document.createElement('span');
       badge.className = `category-badge cat-${p.category}`;
@@ -256,8 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
       div.appendChild(badge);
       
       div.addEventListener('click', () => {
-        selectPerformer(p);
-        searchInput.value = fields.name;
+        selectPerformer(p, dayName);
+        searchInput.value = displayName || fields.coordinate;
         autocompleteList.style.display = 'none';
       });
       
@@ -332,6 +400,20 @@ document.addEventListener('DOMContentLoaded', () => {
         drawLocalGridPath();
       });
     }
+
+    const showNeighborDots = document.getElementById('showNeighborDots');
+    if (showNeighborDots) {
+      showNeighborDots.addEventListener('change', () => {
+        drawLocalGridPath();
+      });
+    }
+
+    const showNeighborNames = document.getElementById('showNeighborNames');
+    if (showNeighborNames) {
+      showNeighborNames.addEventListener('change', () => {
+        drawLocalGridPath();
+      });
+    }
   }
 
   function resetToEmptyState() {
@@ -341,23 +423,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Select performer and query details
-  function selectPerformer(performer) {
+  // dayOverrideName: name from the day's roster (may be blank)
+  function selectPerformer(performer, dayOverrideName) {
     currentPerformer = performer;
-    activeFormationIdx = 0; // Reset active formation index to 0 (Basic)
+    activeFormationIdx = 0;
     resetZoomAndPan();
     
-    // Reset trajectory toggle checkbox to unchecked
     const showFullTrajectory = document.getElementById('showFullTrajectory');
-    if (showFullTrajectory) {
-      showFullTrajectory.checked = false;
-    }
+    if (showFullTrajectory) showFullTrajectory.checked = false;
+    const showNeighborDots = document.getElementById('showNeighborDots');
+    if (showNeighborDots) showNeighborDots.checked = false;
+    const showNeighborNamesEl = document.getElementById('showNeighborNames');
+    if (showNeighborNamesEl) showNeighborNamesEl.checked = false;
+
     
     const fields = getPerformerFields(performer);
+    // displayName: strictly from day roster (dayOverrideName).
+    // Empty string is a valid value (session with no data → show blank).
+    const displayName = (dayOverrideName !== undefined && dayOverrideName !== null)
+      ? dayOverrideName  // use day name (may be '' for no-data sessions)
+      : '';              // default blank if called without day context
+    currentDisplayName = displayName; // Store for use by map/modal/PDF
     
     // Update summary card
-    perfAvatar.textContent = fields.name.charAt(0);
+    perfAvatar.textContent = displayName ? displayName.charAt(0) : fields.coordinate.charAt(0);
     perfAvatar.className = `performer-avatar cat-${performer.category}`;
-    perfName.textContent = fields.name;
+    perfName.textContent = displayName;
     perfCategory.textContent = performer.category;
     perfCategory.className = `meta-badge cat-${performer.category}`;
     perfID.textContent = `起點座標: ${fields.coordinate}`;
@@ -395,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
       coordBadge.textContent = coordStr;
       
       // Render HTML landmark icons
-      drawHtmlLandmarkIcon(iconWrapper, f.key, currentPerformer.category, fields.name);
+      drawHtmlLandmarkIcon(iconWrapper, f.key, currentPerformer.category, currentDisplayName || fields.coordinate);
       
       // Render lyrics inside Card
       let lyricsItem = card.querySelector('.lyrics-item');
@@ -977,11 +1068,103 @@ document.addEventListener('DOMContentLoaded', () => {
       pathPointsGroup.appendChild(g);
     });
 
-    // Only update auxiliary UI if we are drawing the main SVG
+    // ── Neighbor Dots ──────────────────────────────────────────────────
+    // X軸 ±2 格 → 綠色點 | Y軸 ±4 格 → 紅色點
+    {
+      const showNeighborToggle = document.getElementById('showNeighborDots');
+      const showNeighbors = showNeighborToggle ? showNeighborToggle.checked : false;
+
+      if (showNeighbors && !homeCoord.isText) {
+        const activeFormation = formations[fIdx];
+        const myCoordStr = activeFormation.key === 'basic'
+          ? fields.coordinate
+          : currentPerformer[activeFormation.key];
+        const myCoord = parseCoordinate(myCoordStr);
+
+        if (!myCoord.isText && myCoord.x !== null) {
+          const X_RADIUS = 1;
+          const Y_RADIUS = 1;
+          const dotR = Math.max(2, GRID_SPACING * 0.14);
+
+          const showNamesToggle = document.getElementById('showNeighborNames');
+          const showNames = showNamesToggle ? showNamesToggle.checked : false;
+
+          function drawNeighborDot(svgX, svgY, color, name, rx, ry) {
+            const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            dot.setAttribute('cx', String(svgX));
+            dot.setAttribute('cy', String(svgY));
+            dot.setAttribute('r', String(dotR));
+            dot.setAttribute('fill', color);
+            dot.setAttribute('fill-opacity', '0.92');
+            dot.setAttribute('stroke', '#ffffff');
+            dot.setAttribute('stroke-width', '1.0');
+            pathSegmentsGroup.appendChild(dot);
+            // 顯示姓名標籤
+            if (showNames && name) {
+              const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+              const shiftX = rx * GRID_SPACING;
+              const shiftY = (ry + 1) * GRID_SPACING;
+              lbl.setAttribute('x', String(svgX + shiftX));
+              lbl.setAttribute('y', String(svgY + shiftY - dotR - 2));
+              
+              // 動態對齊以防重疊
+              let anchor = 'middle';
+              if (rx < -0.01) {
+                anchor = 'end';
+              } else if (rx > 0.01) {
+                anchor = 'start';
+              }
+              lbl.setAttribute('text-anchor', anchor);
+              lbl.setAttribute('fill', color);
+              lbl.setAttribute('stroke', '#0f172a');
+              lbl.setAttribute('stroke-width', '0.9');
+              lbl.setAttribute('paint-order', 'stroke fill');
+              lbl.setAttribute('font-size', '3.7');
+              lbl.setAttribute('font-weight', 'bold');
+              lbl.textContent = name;
+              pathSegmentsGroup.appendChild(lbl);
+            }
+          }
+
+          // 以身分證座標為基準，找三個縱軸的鄰近格，顯示當前隊形位置
+          // X-1 → 藍色 | X → 紅色 | X+1 → 綠色
+          const myBasicCoord = parseCoordinate(fields.coordinate);
+          if (!myBasicCoord.isText && myBasicCoord.x !== null) {
+            const columnDefs = [
+              { xOffset: -1, color: '#3b82f6' }, // X-1 藍色
+              { xOffset:  0, color: '#ef4444' }, // X   紅色
+              { xOffset: +1, color: '#22c55e' }, // X+1 綠色
+            ];
+            columnDefs.forEach(col => {
+              const targetX = myBasicCoord.x + col.xOffset;
+              performersData.forEach(p => {
+                if (p === currentPerformer && col.xOffset === 0) return;
+                const basicCoord = parseCoordinate(p.id);
+                if (basicCoord.isText || basicCoord.x === null) return;
+                const dx = Math.abs(basicCoord.x - targetX);
+                const dy = Math.abs(basicCoord.y - myBasicCoord.y);
+                if (dx >= 0.01 || dy > Y_RADIUS) return; // 指定 X 欄、Y±1
+                const nCoordStr = activeFormation.key === 'basic' ? p.id : p[activeFormation.key];
+                if (!nCoordStr) return;
+                const nCoord = parseCoordinate(nCoordStr);
+                if (nCoord.isText || nCoord.x === null) return;
+                const rx = col.xOffset;
+                const ry = basicCoord.y - myBasicCoord.y;
+                const nsvg = gridToSvg(nCoord.x - homeCoord.x, nCoord.y - homeCoord.y);
+                const nName = currentDayNameMap[p.id] || '';
+                drawNeighborDot(nsvg.x, nsvg.y, col.color, nName, rx, ry);
+              });
+            });
+          }
+        }
+      }
+    }
+    // ───────────────────────────────────────────────────────────────
     if (isMainSvg) {
       // Update top coordinate display bar
       const coordBar = document.getElementById('mapCoordDisplayBar');
       if (coordBar) {
+
         coordBar.innerHTML = '';
         
         const coordBarPoints = [];
@@ -1525,7 +1708,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!currentPerformer) return;
       const fields = getPerformerFields(currentPerformer);
       
-      modalTitle.textContent = `${fields.name} (${fields.coordinate}) - 所有隊形定點圖`;
+      modalTitle.textContent = `${currentDisplayName || fields.coordinate} (${fields.coordinate}) - 所有隊形定點圖`;
       modalBody.innerHTML = '';
       
       // Render 6 previews inside modal
@@ -1560,7 +1743,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dlBtn.className = 'control-btn modal-map-btn';
         dlBtn.innerHTML = `<i class="fa-solid fa-download"></i> 下載 PDF`;
         dlBtn.addEventListener('click', () => {
-          const filename = `${fields.name}_${fields.coordinate}_${idx + 1}_${f.label}.pdf`;
+          const filename = `${currentDisplayName || fields.coordinate}_${fields.coordinate}_${idx + 1}_${f.label}.pdf`;
           dlBtn.disabled = true;
           dlBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>...`;
           const stepName = `${String(idx + 1).padStart(2, '0')}. ${f.name}`;
@@ -1628,7 +1811,7 @@ document.addEventListener('DOMContentLoaded', () => {
           await new Promise(r => setTimeout(r, 100));
         }
         
-        const filename = `${fields.name}_${fields.coordinate}_所有定點.pdf`;
+        const filename = `${currentDisplayName || fields.coordinate}_${fields.coordinate}_所有定點.pdf`;
         pdf.save(filename);
         
         downloadAllBtn.innerHTML = `<i class="fa-solid fa-check"></i> 下載完成`;

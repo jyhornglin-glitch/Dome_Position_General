@@ -24,7 +24,7 @@ else:
             p = {
                 "category": (row.get("category") or row.get("身分別") or "").strip(),
                 "id": (row.get("id") or row.get("身份證") or "").strip(),
-                "name": (row.get("name") or row.get("姓名") or "").strip(),
+                "name": "",  # 姓名由 dayperformers.csv 帶入，此欄固定為空
                 "circle": (row.get("circle") or row.get("01圓形") or "").strip(),
                 "xingYuan": (row.get("xingYuan") or row.get("02行願") or "").strip(),
                 "jingSi": (row.get("jingSi") or row.get("04靜思家風") or "").strip(),
@@ -32,7 +32,7 @@ else:
                 "noBoat": (row.get("noBoat") or row.get("05-2無法船") or "").strip(),
                 "bigV": (row.get("bigV") or row.get("06四弘誓願") or "").strip()
             }
-            # Add only if id is present (name is optional as it can be empty)
+            # Add only if id is present (name is always empty; comes from dayperformers.csv)
             if p["id"]:
                 performers.append(p)
                 

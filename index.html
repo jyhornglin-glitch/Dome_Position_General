@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- FontAwesome for professional icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=1.2.7">
+  <link rel="stylesheet" href="style.css?v=1.4.6">
 </head>
 <body>
   <!-- Ambient background glow behind the phone -->
@@ -36,6 +36,39 @@
 
       <!-- Actual Application Screen -->
       <div class="phone-screen">
+
+        <!-- ===== Session Selection Overlay ===== -->
+        <div id="sessionOverlay" class="session-overlay">
+          <div class="session-overlay-inner">
+            <!-- Logo icon -->
+            <div class="session-logo">
+              <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <!-- Main system name -->
+            <h2 class="session-system-name">
+              大巨蛋東二演繹個人定位系統
+              <span>Dome East-2 Stage Position Navigator</span>
+            </h2>
+            <!-- Session label -->
+            <p class="session-title">🎭 請選擇今日演出場次</p>
+            <!-- Hint box -->
+            <div class="session-hint">
+              <i class="fa-solid fa-circle-info"></i>
+              <p>
+                點選下方對應日期卡片，確認無誤後按「確認進入」。<br>
+                進入後可輸入<strong>身分證編號</strong>（如 <code>1-49</code>）或<strong>姓名</strong>搜尋個人定位。
+              </p>
+            </div>
+            <!-- Day cards (rendered by JS) -->
+            <div class="session-cards" id="sessionCards"></div>
+            <!-- Confirm button -->
+            <button id="sessionConfirmBtn" class="session-confirm-btn" disabled>
+              <i class="fa-solid fa-circle-check"></i> 確認進入
+            </button>
+          </div>
+        </div>
+        <!-- ===== End Session Overlay ===== -->
+
         <div class="app-container">
           <!-- Header -->
           <header class="app-header">
@@ -44,6 +77,7 @@
               <div class="logo-text">
                 <h1>大巨蛋東二演繹個人定位系統</h1>
                 <p>Personal Stage Position Navigator</p>
+                <span id="currentSessionBadge" class="current-session-badge" style="display:none"></span>
               </div>
             </div>
             <div class="header-actions">
@@ -128,12 +162,22 @@
                     <span><span class="dot-legend current-pos"></span>目前點</span>
                   </div>
                   
-                  <div class="trajectory-toggle-container">
-                    <input type="checkbox" id="showFullTrajectory" autocomplete="off">
-                    <label for="showFullTrajectory">顯示完整 7 點軌跡</label>
+                  <div class="toggle-row">
+                    <div class="trajectory-toggle-container">
+                      <input type="checkbox" id="showFullTrajectory" autocomplete="off">
+                      <label for="showFullTrajectory">完整 7 點</label>
+                    </div>
+                    <div class="trajectory-toggle-container">
+                      <input type="checkbox" id="showNeighborDots" autocomplete="off">
+                      <label for="showNeighborDots"><span class="dot-legend neighbor-dot-legend" style="background:#3b82f6;"></span>X-1 <span class="dot-legend neighbor-dot-legend" style="background:#ef4444;margin-left:2px;"></span>X <span class="dot-legend neighbor-dot-legend" style="background:#22c55e;margin-left:2px;"></span>X+1</label>
+                    </div>
+                    <div class="trajectory-toggle-container">
+                      <input type="checkbox" id="showNeighborNames" autocomplete="off">
+                      <label for="showNeighborNames">顯示鄰近姓名</label>
+                    </div>
                   </div>
-                  
                   <div id="mapCoordDisplayBar" class="map-coord-display-bar"></div>
+
                   <div class="svg-wrapper">
  
                     <!-- 360x360 relative coordinate system view -->
@@ -495,9 +539,10 @@
   </div>
 
   <!-- Load Scripts -->
-  <script src="data.js?v=1.2.7"></script>
-  <script src="lyrics.js?v=1.2.7"></script>
+  <script src="data.js?v=1.4.6"></script>
+  <script src="lyrics.js?v=1.4.6"></script>
+  <script src="daydata.js?v=1.4.6"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="app.js?v=1.2.7"></script>
+  <script src="app.js?v=1.4.6"></script>
 </body>
 </html>

@@ -1530,12 +1530,12 @@ svg {
 .map-coord-display-bar {
   display: flex;
   align-items: stretch;
-  gap: 6px;
+  gap: 4px;
   background: rgba(15, 23, 42, 0.5);
   border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  padding: 8px 10px;
-  margin: 10px 15px 5px 15px;
+  border-radius: 10px;
+  padding: 4px 8px;
+  margin: 4px 15px 3px 15px;
   backdrop-filter: blur(10px);
 }
 
@@ -1544,13 +1544,13 @@ svg {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 1px;
   flex: 1;
   min-width: 0;
-  padding: 6px 10px;
+  padding: 3px 8px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: 8px;
+  border-radius: 7px;
   white-space: nowrap;
 }
 
@@ -1929,4 +1929,344 @@ svg {
 .manual-link i {
   font-size: 12px;
   color: #ef4444; /* PDF red icon */
+}
+
+/* =========================================
+   Session Selection Overlay — Vibrant Design
+   ========================================= */
+.session-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background: linear-gradient(160deg, #020c1b 0%, #04172e 40%, #071a3a 70%, #0a0d22 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  border-radius: inherit;
+}
+
+.session-overlay-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 28px;
+  width: 100%;
+  gap: 10px;
+}
+
+/* Top decorative bar */
+.session-overlay-inner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6, #06b6d4);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+  border-radius: inherit;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.session-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0891b2 0%, #1d4ed8 100%);
+  border: 2px solid rgba(6,182,212,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #fff;
+  box-shadow: 0 0 32px rgba(6,182,212,0.5), 0 0 64px rgba(6,182,212,0.2);
+  margin-top: 8px;
+}
+
+/* Main system title */
+.session-system-name {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  color: #ffffff;
+  text-align: center;
+  line-height: 1.45;
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 20px rgba(6,182,212,0.6), 0 2px 8px rgba(0,0,0,0.8);
+}
+
+.session-system-name span {
+  display: block;
+  background: linear-gradient(90deg, #22d3ee, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.session-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #22d3ee;
+  text-align: center;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 4px 14px;
+  border: 1px solid rgba(34,211,238,0.3);
+  border-radius: 20px;
+  background: rgba(34,211,238,0.08);
+}
+
+/* Hint box */
+.session-hint {
+  width: 100%;
+  background: rgba(59,130,246,0.10);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-left: 3px solid #3b82f6;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.session-hint i {
+  color: #60a5fa;
+  font-size: 13px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.session-hint p {
+  font-size: 11px;
+  color: #93c5fd;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.session-subtitle {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.session-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.session-card {
+  background: rgba(255,255,255,0.04);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 18px 10px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(.34,1.56,.64,1);
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.session-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(6,182,212,0) 0%, rgba(6,182,212,0.04) 100%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.session-card:hover {
+  border-color: rgba(6,182,212,0.55);
+  background: rgba(6,182,212,0.07);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(6,182,212,0.2);
+}
+
+.session-card:hover::before { opacity: 1; }
+
+.session-card.selected {
+  border-color: #22d3ee;
+  background: rgba(6,182,212,0.14);
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 1px #22d3ee, 0 8px 32px rgba(6,182,212,0.35);
+}
+
+.session-card-weekday {
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.session-card.selected .session-card-weekday {
+  color: #67e8f9;
+}
+
+.session-card-date {
+  font-family: 'Outfit', monospace;
+  font-size: 24px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.85);
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.session-card.selected .session-card-date {
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(34,211,238,0.8);
+}
+
+.session-card-count {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.session-card.selected .session-card-count {
+  background: rgba(34,211,238,0.18);
+  color: #22d3ee;
+}
+
+/* Selected checkmark */
+.session-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 12px;
+  color: #22d3ee;
+  font-weight: 900;
+}
+
+.session-confirm-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #0891b2 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 24px rgba(8,145,178,0.45);
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.session-confirm-btn:disabled {
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.3);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.session-confirm-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(8,145,178,0.65);
+  background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+}
+
+/* Session badge in header */
+.current-session-badge {
+  font-family: 'Outfit', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #22d3ee;
+  background: rgba(6,182,212,0.12);
+  border: 1px solid rgba(6,182,212,0.35);
+  border-radius: 20px;
+  padding: 2px 8px;
+  letter-spacing: 0.5px;
+}
+
+/* Hint box inline code + strong */
+.session-hint strong {
+  color: #93c5fd;
+  font-weight: 700;
+}
+.session-hint code {
+  font-family: 'Outfit', monospace;
+  background: rgba(255,255,255,0.10);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 11px;
+  color: #67e8f9;
+}
+
+/* =========================================
+   Neighbor Dots on Grid Map
+   ========================================= */
+.neighbor-dot {
+  pointer-events: none;
+  transition: r 0.2s ease;
+}
+
+.neighbor-dot-label {
+  font-size: 5.5px;
+  fill: #ef4444;
+  font-family: 'Outfit', monospace;
+  font-weight: 700;
+  pointer-events: none;
+  text-shadow: 0 0 3px #fff;
+}
+
+/* Red dot legend indicator in toggle label */
+.dot-legend.neighbor-dot-legend {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 4px rgba(239,68,68,0.6);
+  margin-right: 4px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Toggle row - checkboxes on one line */
+.toggle-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  padding: 2px 0;
+  width: 100%;
+}
+
+.toggle-row .trajectory-toggle-container {
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  font-size: 10px;
 }
